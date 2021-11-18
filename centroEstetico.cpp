@@ -1,6 +1,6 @@
-// Proyecto gestión de centro estetico.
-// Thiago López Alderete, Legajo:
-// Juan Diego Demichelis, Legajo:
+// Proyecto gestiÃ³n de centro estetico.
+// Thiago LÃ³pez Alderete, Legajo: 53840
+// Juan Diego Demichelis, Legajo: 53820
 	
 // Bibliotecas
 
@@ -23,12 +23,12 @@
 	void eEntero(); // Mensaje para cuando el numero ingresado no es entero.
 	void eNumInval(); // Mensaje para cuando el numero ingresado es invalido.
 	
-	//Menús
+	//MenÃºs
 	void encabezado(); // Encabezado de los menus.
-	int menu();	//Menú principal.
-	int moduloEspacio(); //Menú del modulo de espacios.
-	int moduloRecepcion(); //Menú del modulo de recepcionistas.
-	int moduloAdmin(); //Menú del modulo de administración.
+	int menu();	//MenÃº principal.
+	int moduloEspacio(); //MenÃº del modulo de espacios.
+	int moduloRecepcion(); //MenÃº del modulo de recepcionistas.
+	int moduloAdmin(); //MenÃº del modulo de administraciÃ³n.
 
 // Main
 
@@ -133,14 +133,14 @@ void eNumInval()
 	system("pause");
 }
 	
-	//Menús
+	//MenÃºs
 
 void encabezado()
 {
 
 	printf("\n\t======================================================================\n");
 	printf("\t\t\t     |Proyecto Centro Estetico|\n");
-	printf("\t\tPrograma para ayudar a la atención y gestión de pacientes\n\t\t\t\tdel centro estetico.");
+	printf("\t\tPrograma para ayudar a la atenciÃ³n y gestiÃ³n de pacientes\n\t\t\t\tdel centro estetico.");
 	printf("\n\t======================================================================\n");
 	putchar('\n');
 	for (int i=0; i < 87; i++) {
@@ -157,12 +157,12 @@ int menu()
 	{
 		system("cls");
 		encabezado();
-		printf("\n\n\tMenú principal: \n\n");
-		printf("\t[1]. Módulo Espacios.\n");
-		printf("\t[2]. Módulo Recepción.\n");
-		printf("\t[3]. Módulo Administración.\n");
+		printf("\n\n\tMenÃº principal: \n\n");
+		printf("\t[1]. MÃ³dulo Espacios.\n");
+		printf("\t[2]. MÃ³dulo RecepciÃ³n.\n");
+		printf("\t[3]. MÃ³dulo AdministraciÃ³n.\n");
 		printf("\t[4]. Salir.\n");
-		printf("\n\tIngrese una opción: ");
+		printf("\n\tIngrese una opciÃ³n: ");
 		scanf("%f",&x);
 		entero=valEnt(x);
 		opcValida=valOpc(x,1,4);
@@ -197,12 +197,12 @@ int moduloEspacio()
 		
 		system("cls");
 		encabezado();
-		printf("\n\n\tMódulo Espacios: \n\n");
-		printf("\t[1]. Iniciar Sesión.\n");
+		printf("\n\n\tMÃ³dulo Espacios: \n\n");
+		printf("\t[1]. Iniciar SesiÃ³n.\n");
 		printf("\t[2]. Visualizar lista de espera de turnos.\n");
-		printf("\t[3]. Registrar evolución del tratamiento.\n");
-		printf("\t[4]. Volver al menú principal.\n");
-		printf("\n\tIngrese una opción: ");
+		printf("\t[3]. Registrar evoluciÃ³n del tratamiento.\n");
+		printf("\t[4]. Volver al menÃº principal.\n");
+		printf("\n\tIngrese una opciÃ³n: ");
 		scanf("%f",&x);
 		entero=valEnt(x);
 		opcValida=valOpc(x,1,4);
@@ -236,13 +236,13 @@ int moduloRecepcion()
 		
 		system("cls");
 		encabezado();
-		printf("\n\n\tMódulo del recepcionista: \n\n");
-		printf("\t[1]. Iniciar Sesión.\n");
+		printf("\n\n\tMÃ³dulo del recepcionista: \n\n");
+		printf("\t[1]. Iniciar SesiÃ³n.\n");
 		printf("\t[2]. Registrar cliente.\n");
 		printf("\t[3]. Registrar turno.\n");
 		printf("\t[4]. Listado de atenciones por profesional y fecha.\n");
-		printf("\t[5]. Volver al menú principal.\n");
-		printf("\n\tIngrese una opción: ");
+		printf("\t[5]. Volver al menÃº principal.\n");
+		printf("\n\tIngrese una opciÃ³n: ");
 		scanf("%f",&x);
 		entero=valEnt(x);
 		opcValida=valOpc(x,1,5);
@@ -276,13 +276,13 @@ int moduloAdmin()
 		
 		system("cls");
 		encabezado();
-		printf("\n\n\tMódulo Administración: \n\n");
+		printf("\n\n\tMÃ³dulo AdministraciÃ³n: \n\n");
 		printf("\t[1]. Registrar Profesional.\n");
 		printf("\t[2]. Registrar Usuario Recepcionista.\n");
 		printf("\t[3]. Atenciones por profesional.\n");
 		printf("\t[4]. Ranking de profesionales por atenciones.\n");
-		printf("\t[5]. Volver al menú principal.\n");
-		printf("\n\tIngrese una opción: ");
+		printf("\t[5]. Volver al menÃº principal.\n");
+		printf("\n\tIngrese una opciÃ³n: ");
 		scanf("%f",&x);
 		entero=valEnt(x);
 		opcValida=valOpc(x,1,5);
