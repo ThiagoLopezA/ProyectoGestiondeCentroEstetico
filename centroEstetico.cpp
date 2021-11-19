@@ -59,26 +59,33 @@ struct Turnos
 	bool valEnt(float x);  // Valida que el numero ingresado sea entero.
 	bool valOpc(float x, int min, int may); // Valida que la opcion ingresada se encuentre en el rango de las validas.
 	
+	
 	//Mensajes
 	void eEntero(); // Mensaje para cuando el numero ingresado no es entero.
 	void eNumInval(); // Mensaje para cuando el numero ingresado es invalido.
 	void eUsuario(); // Mensaje para cuando el inicio de sesion es incorrecto.
+	void eConjunto(int min, int may); // Mensaje para cuando el numero no esta en un conjunto de numeros validos.
+	void eChar(); // Mensaje para cuando el caracter de decision es incorrecto.
 	//Menus
 	void encabezado(); // Encabezado de los menus.
-	int menu();	//Menu principal.
-	
-	void moduloEspacio(int &profesional); //Menu del modulo de espacios con usuario logueado.
-	int moduloRecepcion(); //Menu del modulo de recepcionistas.
-	int moduloAdmin(); //Menu del modulo de administracion.
+	int menu(fecha aux);	//Menu principal.
+	void getFecha(fecha &aux);
+	void moduloEspacio(int &profesional, fecha aux); //Menu del modulo de espacios con usuario logueado.
+	void moduloRecepcion(int &recepcionista, fecha aux); //Menu del modulo de recepcionistas.
+	void moduloAdmin(fecha aux); //Menu del modulo de administracion.
 	
 	//Funciones de menus
+	bool login(int &profesional,int mod); //inicio de sesion de profesionales/recepcionistas.
 	
 		//Funciones del modulo espacio.
-		bool loginProf(int &profesional); //inicio de sesion de profesionales.
+		
 		
 		//Funciones del modulo recepcion.
 		
 		//Funciones del modulo administracion.
+
+// Var global
+
 
 // Main
 
@@ -89,37 +96,50 @@ int main()
 	int Menu,ModEspacio,ModRecep,ModAdmin;
 	int profesional=0; // Este representara el id del profesional que inicio sesion.
 	int recepcionista=0; // Este represente el id del recepcionista que inicio sesion.
-	bool sesionProf;
+	bool sesionProf,sesionRecep;
 	FILE *recep;
 	FILE *profe;
 	FILE *clientes;
 	FILE *turnos;
+	fecha fActual;
 
 	
-	
+	getFecha(fActual);
 	do
 	{
-		Menu=menu();
+		Menu=menu(fActual);
 		switch(Menu)
 		{
 			case 1:
 				{
 					if(profesional==0)
 					{
-						sesionProf=loginProf(profesional);
+						sesionProf=login(profesional,1); // El numero de modulo va a hacer q varie el archivo donde busque el usuario.
 						if(sesionProf==1)
 						{
-							moduloEspacio(profesional);
+							moduloEspacio(profesional,fActual);
 						}
 					}
 					else
 					{
-						moduloEspacio(profesional);	
+						moduloEspacio(profesional,fActual);	
 					}
 					break;
 				}
 			case 2:
 				{
+					if(recepcionista==0)
+					{
+						sesionRecep=login(recepcionista,2);
+						if(sesionRecep==1)
+						{
+							moduloRecepcion(recepcionista,fActual);
+						}
+					}
+					else
+					{
+						moduloRecepcion(recepcionista,fActual);
+					}
 					
 				}
 			case 3:
@@ -194,23 +214,154 @@ void eUsuario()
 	printf("\n\t======================================================================\n\n");
 	system("pause");
 }
+
+void eConjunto(int min, int may)
+{
+	system("cls");
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tError #004:\n\t\tEl numero debe estar entre %i y %i.\n",min,may);
+	printf("\n\t======================================================================\n\n");
+	system("pause");
+}
+
+void eChar()
+{
+	system("cls");
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tError #005:\n\t\tEl caracter es incorrecto, solo se acepta (S o N)\n");
+	printf("\n\t======================================================================\n\n");
+	system("pause");	
+}
+
 	
 	//Menus
+	
+void getFecha(fecha &aux)
+{
+	bool esEntero,fechaValida, error=0;
+	float temp;
+	char band;
+	bool salir;
+	
+	do
+	{	
+		do
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t\t\t     Bienvenido usuario!\n");	
+			printf("\n\t======================================================================\n");
+			printf("\n\tIngrese la fecha actual: DD/MM/AAAA");
+			printf("\n\tDigite el dia: ");
+			scanf("%f",&temp);
+			esEntero=valEnt(temp);
+			fechaValida=valOpc(temp,1,31);
+			if(esEntero!=1 or fechaValida!=1)
+			{
+				eConjunto(1,31);
+				error=1;
+			}
+			else
+			{
+				error=0;
+				aux.dia=temp;
+			}
+		}while(error!=0);
+		
+		do
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t\t\t     Bienvenido usuario!\n");	
+			printf("\n\t======================================================================\n");
+			printf("\n\tIngrese la fecha actual: %02i/MM/AAAA",aux.dia);
+			printf("\n\tDigite el mes: ");
+			scanf("%f",&temp);
+			esEntero=valEnt(temp);
+			fechaValida=valOpc(temp,1,12);
+			if(esEntero!=1 or fechaValida!=1)
+			{
+				error=1;
+				eConjunto(1,12);
+			}
+			else
+			{
+				error=0;
+				aux.mes=temp;
+			}
+		}while(error!=0);
+		
+		do
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t\t\t     Bienvenido usuario!\n");	
+			printf("\n\t======================================================================\n");
+			printf("\n\tIngrese la fecha actual: %02i/%02i/AAAA",aux.dia,aux.mes);
+			printf("\n\tDigite el anio: ");
+			scanf("%f",&temp);
+			esEntero=valEnt(temp);
+			fechaValida=valOpc(temp,2000,3000);
+			if(esEntero!=1 or fechaValida!=1)
+			{
+				error=1;
+				eConjunto(2000,3000);
+			}
+			else
+			{
+				error=0;
+				aux.anio=temp;
+			}
+		}while(error!=0);
+		
+		do
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t\t\t     Bienvenido usuario!\n");	
+			printf("\n\t======================================================================\n");
+			printf("\n\tIngrese la fecha actual: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
+			printf("\n\tEsta seguro que esta es la fecha correcta? (S/N): ");
+			scanf("%c",&band);
+			if(band!='S' and band!='N')
+			{
+				error=1;
+				eChar();
+			}
+			else
+			{
+				error=0;
+				if(band=='S')
+				{
+					salir=1;
+				}
+				else
+				{
+					salir=0;
+				}
+			}
+		}while(error!=0);
+		
 
-void encabezado()
+	}while(salir!=1);
+	
+}
+
+void encabezado(fecha aux)
 {
 
 	printf("\n\t======================================================================\n");
 	printf("\t\t\t     |Proyecto Centro Estetico|\n");
 	printf("\t\tPrograma para ayudar a la atencion y gestion de pacientes\n\t\t\t\tdel centro estetico.");
 	printf("\n\t======================================================================\n");
+	printf("\t\tFecha: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
 	putchar('\n');
 	for (int i=0; i < 87; i++) {
 		putchar('_');
 	}
 }
 
-int menu()
+int menu(fecha aux)
 {
 	float x;
 	bool entero,opcValida,error=0;
@@ -218,7 +369,7 @@ int menu()
 	do
 	{
 		system("cls");
-		encabezado();
+		encabezado(aux);
 		printf("\n\n\tMenu principal: \n\n");
 		printf("\t[1]. Modulo Espacios.\n");
 		printf("\t[2]. Modulo Recepcion.\n");
@@ -249,7 +400,7 @@ int menu()
 	return x;		
 }
 
-bool loginProf(int &profesional)
+bool login(int &profesional,int mod)
 {
 	Usuario prof;
 	int comp,comp1;
@@ -286,7 +437,7 @@ bool loginProf(int &profesional)
 
 }
 
-void moduloEspacio(int &profesional)
+void moduloEspacio(int &profesional,fecha aux)
 {
 	float x;
 	bool entero,opcValida,error;
@@ -296,7 +447,7 @@ void moduloEspacio(int &profesional)
 	{
 		
 		system("cls");
-		encabezado();
+		encabezado(aux);
 		printf("\n\n\tModulo Espacios: \n\n");
 		printf("\tID de la sesion: %i\n\n",profesional);
 		printf("\t[1]. Cerrar sesion.\n");
@@ -337,18 +488,19 @@ void moduloEspacio(int &profesional)
 	}
 }
 
-int moduloRecepcion()
+void moduloRecepcion(int &recepcionista,fecha aux)
 {
 	float x;
 	bool entero,opcValida,error;
-	
+	int opc;
 	do
 	{
 		
 		system("cls");
-		encabezado();
+		encabezado(aux);
 		printf("\n\n\tModulo del recepcionista: \n\n");
-		printf("\t[1]. Iniciar Sesion.\n");
+		printf("\tID de la sesion: %i\n\n",recepcionista);
+		printf("\t[1]. Cerrar sesion.\n");
 		printf("\t[2]. Registrar cliente.\n");
 		printf("\t[3]. Registrar turno.\n");
 		printf("\t[4]. Listado de atenciones por profesional y fecha.\n");
@@ -374,10 +526,18 @@ int moduloRecepcion()
 			error=0;
 		}
 	}while(error!=0);
-	return x;
+	opc=x;	
+	switch(opc)
+	{
+		case 1:
+			{
+				recepcionista=0;
+				break;
+			}
+	}
 }
 
-int moduloAdmin()
+void moduloAdmin(fecha aux)
 {
 	float x;
 	bool entero,opcValida,error;
@@ -386,7 +546,7 @@ int moduloAdmin()
 	{
 		
 		system("cls");
-		encabezado();
+		encabezado(aux);
 		printf("\n\n\tModulo Administracion: \n\n");
 		printf("\t[1]. Registrar Profesional.\n");
 		printf("\t[2]. Registrar Usuario Recepcionista.\n");
@@ -414,7 +574,7 @@ int moduloAdmin()
 			error=0;
 		}
 	}while(error!=0);
-	return x;
+
 }
 
 
