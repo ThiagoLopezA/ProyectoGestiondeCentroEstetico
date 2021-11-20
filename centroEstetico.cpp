@@ -86,8 +86,7 @@ struct Turnos
 	//Funciones del modulo administracion.
 
 // Var global
-Cliente clientes; // Registro para C	lientes.
-Turnos turno; // Registro para Turnos.
+Turnos turno; // Registro para turnos.
 FILE *cliente;
 FILE *turnos;
 // Main
@@ -148,7 +147,7 @@ int main()
 				
 				}
 		}
-	}while(Menu!=4);
+	}while(Menu!=5);
 	
 	
 }
@@ -187,18 +186,21 @@ bool valOpc(float x, int min, int may)
 	}
 }
 
-bool valFec(int x, int min, int max) //revisar tipo de dato x//
+bool valFec(float x, int min, int max)
 {
-	bool error=0;
-	if(x < min or x > max)
+	bool vEnt,vOpc;
+	
+	vEnt=valEnt(x);
+	vOpc=valOpc(x,min,max);
+	
+	if(vEnt==1 and vOpc==1)
 	{
-		error=0;
+		return 1;
 	}
 	else
 	{
-		error=1;
+		return 0;
 	}
-	return error;
 }
 
 	//Mensajes
@@ -248,6 +250,43 @@ void eChar()
 	system("pause");	
 }
 
+void eNegativo()
+{
+	system("cls");
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tError #006:\n\t\tNo se permiten los numeros negativos.\n");
+	printf("\n\t======================================================================\n\n");
+	system("pause");		
+}
+
+void eVacio()
+{
+	system("cls");
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tError #007:\n\t\tNo se permite saltear este campo.\n");
+	printf("\n\t======================================================================\n\n");
+	system("pause");
+}
+	//Encabezados
+void encabezado(fecha aux)
+{
+
+	printf("\n\t======================================================================\n");
+	printf("\t\t\t     |Proyecto Centro Estetico|\n");
+	printf("\t\tPrograma para ayudar a la atencion y gestion de pacientes\n\t\t\t\tdel centro estetico.");
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tFecha: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
+	putchar('\n');
+	for (int i=0; i < 87; i++) {
+		putchar('_');
+	}
+}
+void encRegCl()
+{	
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tRegistro de Cliente\n");
+	printf("\n\t======================================================================\n\n");
+}
 	
 	//Menus
 	
@@ -337,6 +376,7 @@ void getFecha(fecha &aux)
 			printf("\n\t======================================================================\n");
 			printf("\n\tIngrese la fecha actual: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
 			printf("\n\tEsta seguro que esta es la fecha correcta? (S/N): ");
+			_flushall();
 			scanf("%c",&band);
 			if(band!='S' and band!='N')
 			{
@@ -362,20 +402,6 @@ void getFecha(fecha &aux)
 	
 }
 
-void encabezado(fecha aux)
-{
-
-	printf("\n\t======================================================================\n");
-	printf("\t\t\t     |Proyecto Centro Estetico|\n");
-	printf("\t\tPrograma para ayudar a la atencion y gestion de pacientes\n\t\t\t\tdel centro estetico.");
-	printf("\n\t======================================================================\n");
-	printf("\t\tFecha: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
-	putchar('\n');
-	for (int i=0; i < 87; i++) {
-		putchar('_');
-	}
-}
-
 int menu(fecha aux)
 {
 	float x;
@@ -389,11 +415,12 @@ int menu(fecha aux)
 		printf("\t[1]. Modulo Espacios.\n");
 		printf("\t[2]. Modulo Recepcion.\n");
 		printf("\t[3]. Modulo Administracion.\n");
-		printf("\t[4]. Salir.\n");
+		printf("\t[4]. Cambiar fecha Actual.\n");
+		printf("\t[5]. Salir.\n");
 		printf("\n\tIngrese una opcion: ");
 		scanf("%f",&x);
 		entero=valEnt(x);
-		opcValida=valOpc(x,1,4);
+		opcValida=valOpc(x,1,5);
 		if(entero!=1 or opcValida!=1)
 		{
 			error=1;
@@ -549,6 +576,11 @@ void moduloRecepcion(int &recepcionista,fecha aux)
 				recepcionista=0;
 				break;
 			}
+		case 2:
+			{
+				getCliente(cliente);
+				break;
+			}
 	}
 }
 
@@ -597,85 +629,243 @@ void moduloAdmin(fecha aux)
 void getCliente(FILE *cliente)
 {
 
-	bool v;
+	bool v, error,cmp;
+	Cliente temp; // reg temporal para cargar clientes para evitar el uso de una var global.
+	float aux;
+	char conf;
+	bool salir;
 	
-	printf("\n\t======================================================================\n");
-	printf("\n\t\tRegistro de Cliente\n");
-	printf("\n\t======================================================================\n\n");
-	
-	printf("\n\tApellido y Nombre : ");
-	_flushall();
-	gets(clientes.ApeyNom);
-	
-	printf("\n\t-------------------\n");
-	
-	printf("\n\tLocalidad : ");
-	_flushall();
-	gets(clientes.localidad);
-	
-	printf("\n\t-------------------\n");
-	
-	printf("\n\tDomicilio : ");
-	_flushall();
-	gets(clientes.domicilio);
-	
-	printf("\n\t-------------------\n");
-
-	printf("\n\tDni : ");
-	scanf("%d",&clientes.dni);
-	
-	printf("\n\t-------------------\n");
-	
-	printf("\n\tFecha de Nacimiento : ");
-	
-	printf("\n\tDia : ");
-	scanf("%d",&clientes.fNacimiento.dia);
-	v = valFec(clientes.fNacimiento.dia,1,30);
-	while(v == 0)
+	do
 	{
-		eConjunto(1,30);
-		scanf("%d",&clientes.fNacimiento.dia);
-		v = valFec(clientes.fNacimiento.dia,1,30);
-		system("cls");
-	}
+		//P- Apellido y nombre
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\tApellido y Nombre : ");
+			_flushall();
+			gets(temp.ApeyNom);
+			cmp=strcmp(temp.ApeyNom,"");
+			if(cmp==0)
+			{
+				error=1;
+				eVacio();
+			}	
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
 	
-	printf("\n\tMes : ");
-	scanf("%d",&clientes.fNacimiento.mes);
-	v = valFec(clientes.fNacimiento.mes,1,12);
-	while(v == 0)
-	{
-		eConjunto(1,12);
-		scanf("%d",&clientes.fNacimiento.mes);
-		v = valFec(clientes.fNacimiento.mes,1,12);
-		system("cls");
-	}
-	
-	printf("\n\tAnio : ");
-	scanf("%d",&clientes.fNacimiento.anio);
-	v = valFec(clientes.fNacimiento.anio,2000,3000);
-	while(v == 0)
-	{
-		eConjunto(2000,3000);
-		scanf("%d",&clientes.fNacimiento.anio);
-		v = valFec(clientes.fNacimiento.anio,2000,3000);
-		system("cls");
-	}
-	
-	printf("\n\t-------------------\n");
-	
-	printf("\n\tPeso : ");
-	scanf("%f",&clientes.peso);
-	
-	printf("\n\t-------------------\n");
-
-	printf("\n\tNro. de Telefono : ");
-	_flushall();
-	gets(clientes.telefono);
 		
-	//cliente = fopen("Clientes.dat","w+b");	
+		//P- Localidad
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\tLocalidad : ");
+			_flushall();
+			gets(temp.localidad);
+			cmp=strcmp(temp.localidad,"");
+			if(cmp==0)
+			{
+				error=1;
+				eVacio();
+			}	
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
 	
+		
+		//P- Domicilio
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\tDomicilio : ");
+			_flushall();
+			gets(temp.domicilio);
+			cmp=strcmp(temp.domicilio,"");
+			if(cmp==0)
+			{
+				error=1;
+				eVacio();
+			}	
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
+	
+		
+		//P- DNI
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\tDni(8 digitos): ");
+			scanf("%d",&temp.dni);
+			if(temp.dni<1000000 or temp.dni<9999999)
+			{
+				error=1;
+				eConjunto(1000000,9999999);
+			}
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
+	
+		//P- Fecha de nacimiento
+		
+		//dia
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\tFecha de Nacimiento : ");
+			printf("\n\tDia : ");
+			scanf("%f",&aux);
+			v = valFec(aux,1,30);
+			if(v!=1)
+			{
+				error=1;
+				eConjunto(1,30);
+			}
+			else
+			{
+				error=0;
+				temp.fNacimiento.dia=aux;
+			}
+		}while(error!=0);
+		//mes
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\tFecha de Nacimiento : ");
+			printf("\n\tMes : ");
+			scanf("%f",&aux);
+			v = valFec(aux,1,12);
+			if(v!=1)
+			{
+				error=1;
+				eConjunto(1,12);
+			}
+			else
+			{
+				error=0;
+				temp.fNacimiento.mes=aux;
+			}
+		}while(error!=0);
+		//anio
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\tFecha de Nacimiento : ");
+			printf("\n\tAnio : ");
+			scanf("%f",&aux);
+			v = valFec(aux,2000,3000);
+			if(v!=1)
+			{
+				error=1;
+				eConjunto(2000,3000);
+			}
+			else
+			{
+				error=0;
+				temp.fNacimiento.anio=aux;
+			}
+		}while(error!=0);
+		
+		//P- Peso
+		
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\tPeso : ");
+			scanf("%f",&temp.peso);
+			if(temp.peso<0)
+			{
+				error=1;
+				eNegativo();
+			}
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
+		
+		//P - Num. de telefono
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\tNro. de Telefono: ");
+			_flushall();
+			gets(temp.telefono);
+			cmp=strcmp(temp.telefono,"");
+			if(cmp==0)
+			{
+				error=1;
+				eVacio();
+			}
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
+	
+		// Confirmacion
+		
+		do
+		{
+			system("cls");
+			encRegCl();
+			printf("\n\t-------------------\n");
+			printf("\n\tApellido y Nombre : ");
+			puts(temp.ApeyNom);
+			printf("\n\tLocalidad : ");
+			puts(temp.localidad);
+			printf("\n\tDomicilio : ");
+			puts(temp.domicilio);
+			printf("\n\tDni : %i",temp.dni);
+			printf("\n\n\tFecha de Nacimiento : %02i/%02i/%i",temp.fNacimiento.dia,temp.fNacimiento.mes,temp.fNacimiento.anio);
+			printf("\n\n\tPeso : %.2f",temp.peso);
+			printf("\n\n\tNro. de Telefono : ");
+			puts(temp.telefono);
+			printf("\n\tConfime si todo es valido (S/N): ");
+			scanf("%c",&conf);
+			if(conf!='S' and conf!='N')
+			{
+				error=1;
+				eChar();
+			}
+			else
+			{
+				error=0;
+				if(conf=='S')
+				{
+					salir=1;
+				}
+				else
+				{
+					salir=0;
+				}
+			}
+		}while(error!=0);
+	
+	}while(salir!=1);
+	
+	cliente=fopen("Clientes.dat","ab+");
+	fwrite(&temp,sizeof(Cliente),1,cliente);
+	fclose(cliente);	
 }
-
+/*
 void getTurno(FILE *turnos)
 {
 	bool v; 
@@ -733,5 +923,5 @@ void getTurno(FILE *turnos)
 	//El detalle del turno se carga cuando se haya realizado la visita//
 	
 }
-
+*/
 
