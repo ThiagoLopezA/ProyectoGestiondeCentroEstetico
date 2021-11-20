@@ -68,6 +68,8 @@ struct Turnos
 	void eChar(); // Mensaje para cuando el caracter de decision es incorrecto.
 	//Menus
 	void encabezado(); // Encabezado de los menus.
+	void encRegCl(); // Encabezado Registo de Cliente
+	void encRegT(); // Encabezado Registo de Turno
 	int menu(fecha aux);	//Menu principal.
 	void getFecha(fecha &aux);
 	void moduloEspacio(int &profesional, fecha aux); //Menu del modulo de espacios con usuario logueado.
@@ -82,13 +84,14 @@ struct Turnos
 	
 	//Funciones del modulo recepcion.
 	void getCliente(FILE *cliente);
-	void getTurno(FILE *turnos);
+	void getTurno(FILE *turnos, FILE *profe, FILE *cliente);
 	//Funciones del modulo administracion.
 
 // Var global
 Turnos turno; // Registro para turnos.
 FILE *cliente;
 FILE *turnos;
+FILE *profe;
 // Main
 
 int main()
@@ -100,7 +103,6 @@ int main()
 	int recepcionista=0; // Este represente el id del recepcionista que inicio sesion.
 	bool sesionProf,sesionRecep;
 	FILE *recep;
-	FILE *profe;
 	fecha fActual;
 
 	
@@ -287,7 +289,13 @@ void encRegCl()
 	printf("\n\t\tRegistro de Cliente\n");
 	printf("\n\t======================================================================\n\n");
 }
-	
+
+void encRegT()
+{	
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tRegistro de Turno\n");
+	printf("\n\t======================================================================\n\n");
+}
 	//Menus
 	
 void getFecha(fecha &aux)
@@ -862,66 +870,216 @@ void getCliente(FILE *cliente)
 	}while(salir!=1);
 	
 	cliente=fopen("Clientes.dat","ab+");
+	if(cliente == NULL)
+	{
+		printf("\n\tHa ocurrido un error, no se Encuentra el Archivo 'Clientes.dat' ");
+	}
 	fwrite(&temp,sizeof(Cliente),1,cliente);
 	fclose(cliente);	
 }
-/*
-void getTurno(FILE *turnos)
+
+void getTurno(FILE *turnos, FILE *profe, FILE *cliente)
 {
-	bool v; 
+	bool v, error,cmp;
+	Turnos temp; // reg temporal para cargar clientes para evitar el uso de una var global.
+	Profesional temp1;
+	Cliente temp2;
+	float aux;
+	char conf;
+	bool salir;
 	
-	printf("\n\t======================================================================\n");
-	printf("\n\t\tRegistro de Turnos\n");
-	printf("\n\t======================================================================\n\n");
-	
-	
-	printf("\n\tId. de Profesional : ");
-	scanf("%d",&turno.idProfesional);
-	
-	printf("\n\t-------------------\n");
-	
-	printf("\n\tFecha de Turno : ");
-	
-	printf("\n\tDia : ");
-	scanf("%d",&turno.Fecha.dia);
-	v = valFec(turno.Fecha.dia,1,30);
-	while(v == 0)
+	do
 	{
-		eConjunto(1,30);
-		scanf("%d",&turno.Fecha.dia);
-		v = valFec(turno.Fecha.dia,1,30);
-		system("cls");
-	}
+		//P- Id Del Profesional
+		do
+		{
+			system("cls");
+			encRegT();
+			printf("\n\tId. Del Profesional : ");
+			scanf("%f",&aux);
+			cmp = valEnt(aux);
+			if(cmp==0)
+			{
+				error=1;
+				eEntero();
+			}	
+			else
+			{
+				temp.idProfesional= aux;
+				profe = fopen("Profesionales.dat","rb");
+				if(profe == NULL)
+				{
+					printf("\n\tHa ocurrido un error, no se han encrotado ningun Id. de Profesional");
+				}
+				else
+				{
+					fread(&temp1,sizeof(Profesional),1,profe);
+					while(!feof(profe) or error != 0)
+					{
+						if(temp.idProfesional == temp1.id)
+						{
+							error=0;
+						}
+						else
+						{
+							fread(&temp1,sizeof(Profesional),1,profe);
+						}
+					}
+					if(error == 1)
+					{
+						printf("\n\tEl Id. de Profesional ingresado no exixte en la Base de Datos");
+					}
+				}
+				fclose(profe);
+			}
+		}while(error!=0);
 	
-	printf("\n\tMes : ");
-	scanf("%d",&turno.Fecha.mes);
-	v = valFec(turno.Fecha.mes,1,12);
-	while(v == 0)
-	{
-		eConjunto(1,12);
-		scanf("%d",&turno.Fecha.mes);
-		v = valFec(turno.Fecha.mes,1,12);
-		system("cls");
-	}
+		
+		//P- DNI del Cliente
+		do
+		{
+			system("cls");
+			encRegT();
+			printf("\n\tDni del Cliente (8 digitos): ");
+			scanf("%d",&temp.dni);
+			if(temp.dni<1000000 or temp.dni<9999999)
+			{
+				error=1;
+				eConjunto(1000000,9999999);
+			}
+			else
+			{
+				cliente = fopen("Clientes.dat","rb");
+				if(cliente == NULL)
+				{
+					printf("\n\tHa ocurrido un error, no se han encrotado ningun DNI de Cliente");
+				}
+				else
+				{
+					fread(&temp2,sizeof(Cliente),1,cliente);
+					while(!feof(cliente) or error != 0)
+					{
+						if(temp.dni == temp2.dni)
+						{
+							error=0;
+						}
+						else
+						{
+							fread(&temp2,sizeof(Cliente),1,cliente);
+						}
+					}
+					if(error == 1)
+					{
+						printf("\n\tEl DNI de Cleinte ingresado no exixte en la Base da Datos");
+					}
+				}
+				fclose(cliente);
+			}
+		}while(error!=0);
 	
-	printf("\n\tAnio : ");
-	scanf("%d",&turno.Fecha.anio);
-	v = valFec(turno.Fecha.anio,2000,3000);
-	while(v == 0)
-	{
-		eConjunto(2000,3000);
-		scanf("%d",&turno.Fecha.anio);
-		v = valFec(turno.Fecha.anio,2000,3000);
-		system("cls");
-	}
+		//P- Fecha de Turno
+		
+		//dia
+		do
+		{
+			system("cls");
+			encRegT();
+			printf("\n\tFecha de Turno : ");
+			printf("\n\tDia : ");
+			scanf("%f",&aux);
+			v = valFec(aux,1,30);
+			if(v!=1)
+			{
+				error=1;
+				eConjunto(1,30);
+			}
+			else
+			{
+				error=0;
+				temp.Fecha.dia=aux;
+			}
+		}while(error!=0);
+		//mes
+		do
+		{
+			system("cls");
+			encRegT();
+			printf("\n\tFecha de Turno : ");
+			printf("\n\tMes : ");
+			scanf("%f",&aux);
+			v = valFec(aux,1,12);
+			if(v!=1)
+			{
+				error=1;
+				eConjunto(1,12);
+			}
+			else
+			{
+				error=0;
+				temp.Fecha.mes=aux;
+			}
+		}while(error!=0);
+		//anio
+		do
+		{
+			system("cls");
+			encRegT();
+			printf("\n\tFecha de Turno : ");
+			printf("\n\tAnio : ");
+			scanf("%f",&aux);
+			v = valFec(aux,2000,3000);
+			if(v!=1)
+			{
+				error=1;
+				eConjunto(2000,3000);
+			}
+			else
+			{
+				error=0;
+				temp.Fecha.anio=aux;
+			}
+		}while(error!=0);
+		
+		
 	
-	printf("\n\t-------------------\n");
+		// Confirmacion
+		
+		do
+		{
+			system("cls");
+			encRegT();
+			printf("\n\t-------------------\n");
+			printf("\n\tId. de Profesional : %d",temp.idProfesional);
+			printf("\n\tDomicilio : ");
+			printf("\n\tDni : %i",temp.dni);
+			printf("\n\n\tFecha de Turno : %02i/%02i/%i",temp.Fecha.dia,temp.Fecha.mes,temp.Fecha.anio);
+			printf("\n\tConfime si todo es valido (S/N): ");
+			scanf("%c",&conf);
+			if(conf!='S' and conf!='N')
+			{
+				error=1;
+				eChar();
+			}
+			else
+			{
+				error=0;
+				if(conf=='S')
+				{
+					salir=1;
+				}
+				else
+				{
+					salir=0;
+				}
+			}
+		}while(error!=0);
 	
-	printf("\n\tDni del Cliente : "); //Hacer manejo de archivos//
-	scanf("%d",&turno.dni);
+	}while(salir!=1);
+	turnos=fopen("Turnos.dat","ab+");
+	fwrite(&temp,sizeof(Turnos),1,turnos);
+	fclose(turnos);	
 	
 	//El detalle del turno se carga cuando se haya realizado la visita//
-	
 }
-*/
+
 
