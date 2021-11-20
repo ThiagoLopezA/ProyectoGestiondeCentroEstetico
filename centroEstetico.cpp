@@ -58,7 +58,7 @@ struct Turnos
 	//Validaciones
 	bool valEnt(float x);  // Valida que el numero ingresado sea entero.
 	bool valOpc(float x, int min, int may); // Valida que la opcion ingresada se encuentre en el rango de las validas.
-	
+	bool valFec(int x, int min, int max); // Valida si el campo de la fecha esta en el limite establecido.
 	
 	//Mensajes
 	void eEntero(); // Mensaje para cuando el numero ingresado no es entero.
@@ -76,17 +76,20 @@ struct Turnos
 	
 	//Funciones de menus
 	bool login(int &profesional,int mod); //inicio de sesion de profesionales/recepcionistas.
+
+	//Funciones del modulo espacio.
 	
-		//Funciones del modulo espacio.
-		
-		
-		//Funciones del modulo recepcion.
-		
-		//Funciones del modulo administracion.
+	
+	//Funciones del modulo recepcion.
+	void getCliente(FILE *cliente);
+	void getTurno(FILE *turnos);
+	//Funciones del modulo administracion.
 
 // Var global
-
-
+Cliente clientes; // Registro para C	lientes.
+Turnos turno; // Registro para Turnos.
+FILE *cliente;
+FILE *turnos;
 // Main
 
 int main()
@@ -99,8 +102,6 @@ int main()
 	bool sesionProf,sesionRecep;
 	FILE *recep;
 	FILE *profe;
-	FILE *clientes;
-	FILE *turnos;
 	fecha fActual;
 
 	
@@ -184,6 +185,20 @@ bool valOpc(float x, int min, int may)
 	{
 		return 1;
 	}
+}
+
+bool valFec(int x, int min, int max) //revisar tipo de dato x//
+{
+	bool error=0;
+	if(x < min or x > max)
+	{
+		error=0;
+	}
+	else
+	{
+		error=1;
+	}
+	return error;
 }
 
 	//Mensajes
@@ -577,5 +592,146 @@ void moduloAdmin(fecha aux)
 
 }
 
+// Modulo Recepcion//
+
+void getCliente(FILE *cliente)
+{
+
+	bool v;
+	
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tRegistro de Cliente\n");
+	printf("\n\t======================================================================\n\n");
+	
+	printf("\n\tApellido y Nombre : ");
+	_flushall();
+	gets(clientes.ApeyNom);
+	
+	printf("\n\t-------------------\n");
+	
+	printf("\n\tLocalidad : ");
+	_flushall();
+	gets(clientes.localidad);
+	
+	printf("\n\t-------------------\n");
+	
+	printf("\n\tDomicilio : ");
+	_flushall();
+	gets(clientes.domicilio);
+	
+	printf("\n\t-------------------\n");
+
+	printf("\n\tDni : ");
+	scanf("%d",&clientes.dni);
+	
+	printf("\n\t-------------------\n");
+	
+	printf("\n\tFecha de Nacimiento : ");
+	
+	printf("\n\tDia : ");
+	scanf("%d",&clientes.fNacimiento.dia);
+	v = valFec(clientes.fNacimiento.dia,1,30);
+	while(v == 0)
+	{
+		eConjunto(1,30);
+		scanf("%d",&clientes.fNacimiento.dia);
+		v = valFec(clientes.fNacimiento.dia,1,30);
+		system("cls");
+	}
+	
+	printf("\n\tMes : ");
+	scanf("%d",&clientes.fNacimiento.mes);
+	v = valFec(clientes.fNacimiento.mes,1,12);
+	while(v == 0)
+	{
+		eConjunto(1,12);
+		scanf("%d",&clientes.fNacimiento.mes);
+		v = valFec(clientes.fNacimiento.mes,1,12);
+		system("cls");
+	}
+	
+	printf("\n\tAnio : ");
+	scanf("%d",&clientes.fNacimiento.anio);
+	v = valFec(clientes.fNacimiento.anio,2000,3000);
+	while(v == 0)
+	{
+		eConjunto(2000,3000);
+		scanf("%d",&clientes.fNacimiento.anio);
+		v = valFec(clientes.fNacimiento.anio,2000,3000);
+		system("cls");
+	}
+	
+	printf("\n\t-------------------\n");
+	
+	printf("\n\tPeso : ");
+	scanf("%f",&clientes.peso);
+	
+	printf("\n\t-------------------\n");
+
+	printf("\n\tNro. de Telefono : ");
+	_flushall();
+	gets(clientes.telefono);
+		
+	//cliente = fopen("Clientes.dat","w+b");	
+	
+}
+
+void getTurno(FILE *turnos)
+{
+	bool v; 
+	
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tRegistro de Turnos\n");
+	printf("\n\t======================================================================\n\n");
+	
+	
+	printf("\n\tId. de Profesional : ");
+	scanf("%d",&turno.idProfesional);
+	
+	printf("\n\t-------------------\n");
+	
+	printf("\n\tFecha de Turno : ");
+	
+	printf("\n\tDia : ");
+	scanf("%d",&turno.Fecha.dia);
+	v = valFec(turno.Fecha.dia,1,30);
+	while(v == 0)
+	{
+		eConjunto(1,30);
+		scanf("%d",&turno.Fecha.dia);
+		v = valFec(turno.Fecha.dia,1,30);
+		system("cls");
+	}
+	
+	printf("\n\tMes : ");
+	scanf("%d",&turno.Fecha.mes);
+	v = valFec(turno.Fecha.mes,1,12);
+	while(v == 0)
+	{
+		eConjunto(1,12);
+		scanf("%d",&turno.Fecha.mes);
+		v = valFec(turno.Fecha.mes,1,12);
+		system("cls");
+	}
+	
+	printf("\n\tAnio : ");
+	scanf("%d",&turno.Fecha.anio);
+	v = valFec(turno.Fecha.anio,2000,3000);
+	while(v == 0)
+	{
+		eConjunto(2000,3000);
+		scanf("%d",&turno.Fecha.anio);
+		v = valFec(turno.Fecha.anio,2000,3000);
+		system("cls");
+	}
+	
+	printf("\n\t-------------------\n");
+	
+	printf("\n\tDni del Cliente : "); //Hacer manejo de archivos//
+	scanf("%d",&turno.dni);
+	
+	//El detalle del turno se carga cuando se haya realizado la visita//
+	
+}
 
 
