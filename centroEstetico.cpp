@@ -18,6 +18,7 @@ struct auxiliar
 	char ApeyNom[60];
 	int posicion;
 };
+
 struct fecha
 {
 	int dia;
@@ -27,8 +28,8 @@ struct fecha
 
 struct Usuario
 {
-	char usuario[10];
-	char clave[10];
+	char usuario[50];
+	char clave[50];
 	char ApeyNom[60];
 };
 
@@ -53,14 +54,19 @@ struct Cliente
 
 struct Turnos
 {
-	int idProfesional;
+	char nombreProfesional[50];
 	char ApeyNom[60];
 	fecha Fecha;
 	int dni;
 	char detalle[380];
-	bool atendido=0;
+	bool atendido;
 };
 
+struct estado
+{
+	bool status;
+	char ApeyNom[50];	
+};
 
 // Prototipos
 
@@ -81,12 +87,12 @@ struct Turnos
 	void encRegT(); // Encabezado Registo de Turno
 	int menu(fecha aux);	//Menu principal.
 	void getFecha(fecha &aux);
-	void moduloEspacio(int &profesional, fecha aux); //Menu del modulo de espacios con usuario logueado.
-	void moduloRecepcion(int &recepcionista, fecha aux); //Menu del modulo de recepcionistas.
+	void moduloEspacio(estado &profesional, fecha aux); //Menu del modulo de espacios con usuario logueado.
+	void moduloRecepcion(estado &recepcionista, fecha aux); //Menu del modulo de recepcionistas.
 	void moduloAdmin(fecha aux); //Menu del modulo de administracion.
 	
 	//Funciones de menus
-	bool login(int &profesional,int mod); //inicio de sesion de profesionales/recepcionistas.
+	void login(estado &profesional,estado &recepcionista,int mod); //inicio de sesion de profesionales/recepcionistas.
 
 	//Funciones del modulo espacio.
 	void getListaTurnos(FILE *turnos,fecha fActual,FILE *Clientes);
@@ -96,12 +102,16 @@ struct Turnos
 	void getTurno(FILE *turnos, FILE *profe, FILE *cliente);
 	void getListado(FILE *cliente);
 	//Funciones del modulo administracion.
-
+	void registrar(FILE *profes,FILE *recep,int mod);
+	void getName(char ApeyNom[50]);
+	void getPass(char password[50]);
+	void getUser (char user[50]);
 // Var global
 Turnos turno; // Registro para turnos.
 FILE *cliente;
 FILE *turnos;
 FILE *profe;
+FILE *recep;
 // Main
 
 int main()
@@ -109,11 +119,11 @@ int main()
 	setlocale(LC_ALL, "spanish");
 	
 	int Menu,ModEspacio,ModRecep,ModAdmin;
-	int profesional=0; // Este representara el id del profesional que inicio sesion.
-	int recepcionista=0; // Este represente el id del recepcionista que inicio sesion.
+	estado profesional;
+	estado recepcionista;
 	bool sesionProf,sesionRecep;
 	fecha fActual;
-
+	
 	
 	getFecha(fActual);
 	do
@@ -123,10 +133,10 @@ int main()
 		{
 			case 1:
 				{
-					if(profesional==0)
+					if(profesional.status!=1)
 					{
-						sesionProf=login(profesional,1); // El numero de modulo va a hacer q varie el archivo donde busque el usuario.
-						if(sesionProf==1)
+						login(profesional,recepcionista,1); // El numero de modulo va a hacer q varie el archivo donde busque el usuario.
+						if(profesional.status==1)
 						{
 							moduloEspacio(profesional,fActual);
 						}
@@ -139,10 +149,10 @@ int main()
 				}
 			case 2:
 				{
-					if(recepcionista==0)
+					if(recepcionista.status!=1)
 					{
-						sesionRecep=login(recepcionista,2);
-						if(sesionRecep==1)
+						login(profesional,recepcionista,2);
+						if(recepcionista.status==1)
 						{
 							moduloRecepcion(recepcionista,fActual);
 						}
@@ -155,7 +165,7 @@ int main()
 				}
 			case 3:
 				{
-				
+					moduloAdmin(fActual);
 				}
 		}
 	}while(Menu!=5);
@@ -346,6 +356,19 @@ void encRegT()
 	printf("\n\t\tRegistro de Turno\n");
 	printf("\n\t======================================================================\n\n");
 }
+
+void encRegUserProf()
+{
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tRegistro de usuario profesional\n");
+	printf("\n\t======================================================================\n\n");
+}
+void encRegUserRec()
+{
+	printf("\n\t======================================================================\n");
+	printf("\n\t\tRegistro de usuario recepcionista\n");
+	printf("\n\t======================================================================\n\n");
+}
 	//Menus
 	
 void getFecha(fecha &aux)
@@ -500,44 +523,235 @@ int menu(fecha aux)
 	return x;		
 }
 
-bool login(int &profesional,int mod)
+void login(estado &profesional,estado &recepcionista,int mod)
 {
-	Usuario prof;
-	int comp,comp1;
+	Usuario profes;
+	Usuario rec;
+	Usuario aux;
+	bool error,encontrado=0;
+	int cmp;
 	
-	system("cls");
-	printf("\n\t======================================================================\n");
-	printf("\n\t\t\t   >Iniciar sesion como profesional:<\n");
-	printf("\n\tUsuario: ");
-	_flushall();
-	gets(prof.usuario);
-	printf("\n\tClave: ");
-	_flushall();
-	gets(prof.clave);
-	
-	comp=strcmp(prof.usuario,"adm");
-	comp1=strcmp(prof.clave,"123");
-	
-	
-	if(comp!=0 or comp1!=0)
+	switch(mod)
 	{
-		eUsuario();
-		return 0;
-	}
-	else
-	{
-		profesional=1;
-		system("cls");
-		printf("\n\t======================================================================\n");
-		printf("\n\t\tBienvenido Usuario Administrador\n");
-		printf("\n\t======================================================================\n\n");
-		system("pause");
-		return 1;
-	}
+		case 1:
+			{
 
+					do
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t\t   >Iniciar sesion como profesional<\n");
+						printf("\n\t======================================================================\n");
+						printf("\n\tUsuario: ");
+						_flushall();
+						gets(profes.usuario);
+						cmp=strcmp(profes.usuario,"");
+						if(cmp==0)
+						{
+							system("cls");
+							printf("\n\t======================================================================\n");
+							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
+							printf("\n\t======================================================================\n");
+							system("pause");
+							error=1;
+						}
+					}while(error!=0);
+		
+					do
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t\t   >Iniciar sesion como profesional<\n");
+						printf("\n\t======================================================================\n");
+						printf("\n\tUsuario: ");
+						puts(profes.usuario);
+						printf("\n\tContrasenia: ");
+						_flushall();
+						gets(profes.clave);
+						cmp=strcmp(profes.clave,"");
+						if(cmp==0)
+						{
+							system("cls");
+							printf("\n\t======================================================================\n");
+							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
+							printf("\n\t======================================================================\n");
+							system("pause");
+							error=1;
+						}
+					}while(error!=0);
+					
+					profe=fopen("Profesionales.dat","ab+");
+					if(profe == NULL )
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t[Error] - No se pudo abrir el archivo 'Profesionales.dat'.\n");
+						printf("\n\t======================================================================\n");
+						system("pause");
+						exit(1);
+					}
+					
+					rewind(profe);
+					fread(&aux,sizeof(Usuario),1,profe);
+					while(!feof(profe))
+					{
+						cmp=strcmp(aux.usuario,profes.usuario);
+						if(cmp==0)
+						{
+							encontrado=1;
+							cmp=strcmp(aux.clave,profes.clave);
+							if(cmp==0)
+							{
+								system("cls");
+								printf("\n\t======================================================================\n");
+								printf("\n\tBienvenido ");
+								puts(aux.ApeyNom);
+								printf("\n\t======================================================================\n");
+								system("pause");
+							}
+							else
+							{
+								system("cls");
+								printf("\n\t======================================================================\n");
+								printf("\n\t[Error] - Clave incorrecta\n");
+								printf("\n\t======================================================================\n");
+								system("pause");
+							}
+							break;
+						}
+						fread(&aux,sizeof(Usuario),1,profe);
+					}
+					
+					if(encontrado!=1)
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t[Error] - El usuario no se encuentra en la base de datos.\n");
+						printf("\n\t======================================================================\n");
+						system("pause");
+					}
+					else
+					{
+						profesional.status=1;
+						strcpy(profesional.ApeyNom,aux.ApeyNom);
+					}
+					fclose(profe);
+				break;
+			}
+		case 2:
+			{
+					do
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t\t   >Iniciar sesion como recepcionista<\n");
+						printf("\n\t======================================================================\n");
+						printf("\n\tUsuario: ");
+						_flushall();
+						gets(rec.usuario);
+						cmp=strcmp(rec.usuario,"");
+						if(cmp==0)
+						{
+							system("cls");
+							printf("\n\t======================================================================\n");
+							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
+							printf("\n\t======================================================================\n");
+							system("pause");
+							error=1;
+						}
+					}while(error!=0);
+		
+					do
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t\t   >Iniciar sesion como recepcionista<\n");
+						printf("\n\t======================================================================\n");
+						printf("\n\tUsuario: ");
+						puts(rec.usuario);
+						printf("\n\tContrasenia: ");
+						_flushall();
+						gets(rec.clave);
+						cmp=strcmp(rec.clave,"");
+						if(cmp==0)
+						{
+							system("cls");
+							printf("\n\t======================================================================\n");
+							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
+							printf("\n\t======================================================================\n");
+							system("pause");
+							error=1;
+						}
+					}while(error!=0);
+					
+					recep=fopen("Recepcionistas.dat","ab+");
+					if(recep == NULL )
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t[Error] - No se pudo abrir el archivo 'Recepcionistas.dat'.\n");
+						printf("\n\t======================================================================\n");
+						system("pause");
+						exit(1);
+					}
+					
+					rewind(recep);
+					fread(&aux,sizeof(Usuario),1,recep);
+					while(!feof(recep))
+					{
+						cmp=strcmp(aux.usuario,rec.usuario);
+						if(cmp==0)
+						{
+							encontrado=1;
+							cmp=strcmp(aux.clave,rec.clave);
+							if(cmp==0)
+							{
+								system("cls");
+								printf("\n\t======================================================================\n");
+								printf("\n\tBienvenido ");
+								puts(aux.ApeyNom);
+								printf("\n\t======================================================================\n");
+								system("pause");
+							}
+							else
+							{
+								system("cls");
+								printf("\n\t======================================================================\n");
+								printf("\n\t[Error] - Clave incorrecta\n");
+								printf("\n\t======================================================================\n");
+								system("pause");
+							}
+							break;
+						}
+						fread(&aux,sizeof(Usuario),1,recep);
+					}
+					
+					if(encontrado!=1)
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t[Error] - El usuario no se encuentra en la base de datos.\n");
+						printf("\n\t======================================================================\n");
+						system("pause");
+					}
+					else
+					{
+						recepcionista.status=1;
+						strcpy(recepcionista.ApeyNom,aux.ApeyNom);
+					}
+					fclose(recep);
+				break;
+			}
+	}
+	
+	
+	
+	
+	
+	
 }
 
-void moduloEspacio(int &profesional,fecha aux)
+void moduloEspacio(estado &profesional,fecha aux)
 {
 	float x;
 	bool entero,opcValida,error;
@@ -551,8 +765,9 @@ void moduloEspacio(int &profesional,fecha aux)
 		system("cls");
 		encabezado(aux);
 		printf("\n\n\tModulo Espacios: \n\n");
-		printf("\tID de la sesion: %i\n\n",profesional);
-		printf("\t[1]. Cerrar sesion.\n");
+		printf("\tUsuario : ");
+		puts(profesional.ApeyNom);
+		printf("\n\t[1]. Cerrar sesion.\n");
 		printf("\t[2]. Visualizar lista de espera de turnos.\n");
 		printf("\t[3]. Registrar evolucion del tratamiento.\n");
 		printf("\t[4]. Volver al menu principal.\n");
@@ -584,7 +799,7 @@ void moduloEspacio(int &profesional,fecha aux)
 	{
 		case 1:
 			{
-				profesional=0;
+				profesional.status=0;
 				break;
 			}
 		case 2:
@@ -595,7 +810,7 @@ void moduloEspacio(int &profesional,fecha aux)
 	}
 }
 
-void moduloRecepcion(int &recepcionista,fecha aux)
+void moduloRecepcion(estado &recepcionista,fecha aux)
 {
 	float x;
 	bool entero,opcValida,error;
@@ -610,8 +825,9 @@ void moduloRecepcion(int &recepcionista,fecha aux)
 		system("cls");
 		encabezado(aux);
 		printf("\n\n\tModulo del recepcionista: \n\n");
-		printf("\tID de la sesion: %i\n\n",recepcionista);
-		printf("\t[1]. Cerrar sesion.\n");
+		printf("\tUsuario : ");
+		puts(recepcionista.ApeyNom);
+		printf("\n\t[1]. Cerrar sesion.\n");
 		printf("\t[2]. Registrar cliente.\n");
 		printf("\t[3]. Registrar turno.\n");
 		printf("\t[4]. Listado de atenciones por profesional y fecha.\n");
@@ -643,7 +859,7 @@ void moduloRecepcion(int &recepcionista,fecha aux)
 	{
 		case 1:
 			{
-				recepcionista=0;
+				recepcionista.status=0;
 				break;
 			}
 		case 2:
@@ -667,6 +883,7 @@ void moduloAdmin(fecha aux)
 {
 	float x;
 	bool entero,opcValida,error;
+	int opcion;
 	
 	do
 	{
@@ -679,7 +896,7 @@ void moduloAdmin(fecha aux)
 		printf("\t[3]. Atenciones por profesional.\n");
 		printf("\t[4]. Ranking de profesionales por atenciones.\n");
 		printf("\t[5]. Volver al menu principal.\n");
-		printf("\n\tIngrese una opciÃ³n: ");
+		printf("\n\tIngrese una opcion: ");
 		scanf("%f",&x);
 		entero=valEnt(x);
 		opcValida=valOpc(x,1,5);
@@ -701,6 +918,21 @@ void moduloAdmin(fecha aux)
 		}
 	}while(error!=0);
 
+	opcion=x;
+	
+	switch(opcion)
+	{
+		case 1:
+			{
+				registrar(profe,recep,1);
+				break;
+			}
+		case 2:
+			{
+				registrar(profe,recep,2);
+				break;
+			}
+	}
 }
 
 // Modulo Espacios //
@@ -778,7 +1010,7 @@ void getListaTurnos(FILE *turnos,fecha fActual,FILE *Clientes)
 		printf("\n\t======================================================================\n");
 		for(int k=0;k<i;k++)
 		{
-			if((temp[k].Fecha.dia==fActual.dia) and (temp[k].Fecha.mes==fActual.mes) and (temp[k].Fecha.anio==fActual.anio) and (temp[k].atendido==0))
+			if((temp[k].Fecha.dia==fActual.dia) and (temp[k].Fecha.mes==fActual.mes) and (temp[k].Fecha.anio==fActual.anio) and (temp[k].atendido!=1))
 			{
 					printf("\n\t%02i.- ",l);
 					puts(temp[k].ApeyNom);
@@ -1396,111 +1628,337 @@ void getListado(FILE *cliente)
 }
 // Modulo Administracion //
 
-/*
-void registrar(FILE *profes,FILE *recep,int mod)
+void getUser(char user[50])
 {
-	char usuario[10];
-	char clave[10];
-	bool min;
-	int c=0,cd=0,n,cmp; // c contador de mayusculas, cd contador de digitos
-	Usuario temp;
+	int cmp,longitud,contadorNum=0,contadorMay=0;
+	char aux;
+	bool error;
 	
-	if(mod==1)
+	do
 	{
 		do
 		{
+			system("cls");
+			printf("\n\tIngrese el usuario: ");
+			_flushall();
+			gets(user);
+			cmp=strcmp(user,"");
+			if(cmp==0)
+			{
 				system("cls");
-				printf("\n\t======================================================================\n");
-				printf("\n\tRegistro de usuario profesional\n");
-				printf("\n\tUsuario: ");
-				_flushall();
-				gets(usuario);
-				n=strlen(usuario);
-				if(n<6 or n>10)
+				printf("\n\t[Error] - No se permite un valor vacio\n\n");
+				system("pause");
+				error=1;
+			}	
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
+		
+		longitud=strlen(user);
+		if(longitud<6 or longitud>10)
+		{
+			system("cls");
+			if(longitud<6)
+			{
+				printf("\n\t[Error] - El usuario debe tener como minimo 6 digitos.\n\n");
+	
+			}
+			else
+			{
+				printf("\n\t[Error] - El usuario debe tener como maximo 10 digitos.\n\n");
+			}
+			system("pause");
+			error=1;
+		}
+		else
+		{
+			for(int j=0;j<longitud;j++)
+			{
+				if(j==0)
 				{
+					aux=toupper(user[j]);
+					if(aux==user[j])
+					{
+						system("cls");
+						printf("\n\t[Error] - El nombre debe empezar con minuscula\n\n");
+						system("pause");
+						error=1;
+						//break;
+					}	
+				}
+				if(isdigit(user[j])!=0)
+				{
+					contadorNum++;
+				}
+				if(contadorNum>3)
+				{
+					system("cls");
+					printf("\n\t[Error] - No se puede poner mas de 3 numeros.\n\n");
+					system("pause");
 					error=1;
-					eUsuario();
+					contadorNum=0;
+					//break;
+				}
+				aux=toupper(user[j]);
+				if(aux==user[j])
+				{
+					contadorMay++;
+				}
+			}
+			if(contadorMay<2)
+			{
+				system("cls");
+				printf("\n\t[Error] - El usuario debe tener almenos 2 mayusculas.\n\n");
+				system("cls");
+				error=1;
+				//break;
+			}
+		}
+	}while(error!=0);
+}
+
+void getPass(char password[50])
+{
+	int cmp,longitud;
+	bool error;
+	int aux,contadorABC=0,contadorNum=0;
+	
+	do
+	{
+		do
+		{
+			system("cls");
+			printf("\n\t Inserte contrasenia: ");
+			_flushall();
+			gets(password);
+			cmp=strcmp(password,"");
+			if(cmp==0)
+			{
+				error=1;
+				system("cls");
+				printf("\n\tLa contrsenia no puede estar vacia.\n\n");
+				system("pause");
+			}
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
+		
+		longitud=strlen(password);
+		
+		if(longitud<6 or longitud>32)
+		{
+			error=1;
+			system("cls");
+			if(longitud<6)
+			{
+				printf("\n\t[Error]- La contrasenia debe tener almenos 6 digitos.\n\n");
+			}
+			else
+			{
+				printf("\n\t[Error] - La contrasenia debe tener como maximo 32 digitos.\n\n");
+			}
+			system("pause");
+		}
+		else
+		{
+			for(int i=0;i<longitud;i++)
+			{
+				if(ispunct(password[i])!=0)
+				{
+					system("cls");
+					printf("\n\t[Error] - No se permiten signos de puntuacion.\n\n");
+					system("pause");
+					error=1;
+					break;
 				}
 				else
 				{
-					cmp=strcmp(usuario,"");
-					if(cmp==0)
+					if(isalpha(password[i])!=0 or isdigit!=0)
 					{
-						error=1;
-						eVacio();
-					}
-					else
-					{
-						if(usuario[0]==tolower(usuario[0]))
+						if(isalpha(password[i])!=0)
 						{
-							min=1;
-						}
-						for(int i=0;i<n+1;i++)
-						{
-							if(usuario[i]==toupper(usuario[i]))
+							if(i>=1)
 							{
-								c++;
-							}
-							if(!isalpha(usuario[i]))
-							{
-								cd++;
-							}
-						}
-						if(min==1 and c>=2 and cd==3)
-						{
-							profes=fopen("Profesionales.dat","ab+");
-							if(profes==NULL)
-							{
-								system("cls");
-								printf("\n\t======================================================================\n");
-								printf("\n\tHa ocurrido un error, el archivo Profesionales.dat no se puede abrir.\n");
-								printf("\n\t======================================================================\n");
-								system("pause");
-								exit(1);
-							}
-							else
-							{
-								fread(&temp,sizeof(Usuario),1,profes);
-								while(!feof(profes))
+								aux=(toupper(password[i-1]))-(toupper(password[i]));
+								if(aux==-1)
 								{
-									cmp=strcmp(usuario,temp.usuario);
-									if(cmp==0)
-									{
-										error=1;
-										eUsuario2();
-									}
+									contadorABC++;
 								}
-								if(error!=1)// Recien pide la contraseña
+								else
 								{
-									do
-									{
-										system("cls");
-										printf("\n\t======================================================================\n");
-										printf("\n\tRegistro de usuario profesional\n");
-										printf("\n\tUsuario: ");
-										puts(usuario);
-										printf("\nContraseña: ")
-										_flushall();
-										gets(clave);
-										cmp=strlen(clave);
-										if(cmp<6 or cmp>32)
-										{
-											eClave();
-										}
-									}while(error!=0);
+									contadorABC=0;
 								}
-							}
+								if(contadorABC>2)
+								{
+									system("cls");
+									printf("\n\t[Error] - No se puede colocar 2 letras alfabeticamente consecutivas.\n\n");
+									system("pause");
+									error=1;
+									break;
+								}
+							}	
 						}
 						else
 						{
+							if(contadorNum==0)
+							{
+								contadorNum++;
+							}
+							else
+							{
+								if(isdigit(password[i-1])!=0)
+								{
+									contadorNum++;
+								}
+								else
+								{
+									contadorNum=0;
+								}
+							}
 							
+							if(contadorNum>3)
+							{
+								system("cls");
+								printf("\n\t[Error] - La contrasenia no puede tener mas de 3 numeros seguidos\n\n");
+								system("pause");
+								error=1;
+								break;
+							}
+								
 						}
 					}
 				}
-				
-		}while(error!=0);
+			}
+		}
+	}while(error!=0);
+}
 
+void getName(char ApeyNom[50])
+{
+	int cmp;
+	bool error;
+	do
+	{
+		system("cls");
+		printf("\n\t Inserte nombre y apellido: ");
+		_flushall();
+		gets(ApeyNom);
+		cmp=strcmp(ApeyNom,"");
+		if(cmp==0)
+		{
+			error=1;
+		}
+		else
+		{
+			error=0;
+		}
+	}while(error!=0);
+}
+
+
+void registrar(FILE *profes,FILE *recep,int mod)
+{
+	char user[50];
+	char password[50];
+	char ApeyNom[50];
+	Usuario aux;
+	Usuario verificado;
+	bool error;
+	int cmp;
+	
+	switch(mod)
+	{
+		case 1:
+			{
+				do
+				{
+					getUser(user);
+					getPass(password);
+					getName(ApeyNom);
+					profes=fopen("Profesionales.dat","ab+");
+					if(profes==NULL)
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t\t[Error] - no se pudo abrir el archivo 'Profesionales.dat'\n");
+						printf("\n\t======================================================================\n");
+						system("pause");
+						exit(1);
+					}
+					fread(&aux,sizeof(Usuario),1,profes);
+					while(!feof(profes))
+					{
+						cmp=strcmp(user,aux.usuario);
+						if(cmp==0)
+						{
+							system("cls");
+							printf("\n\t======================================================================\n");
+							printf("\n\t[Error] - El usuario ya esta tomado, intente nuevamente...\n\n");
+							printf("\n\t======================================================================\n");
+							system("pause");
+							error=1;
+						}
+						fread(&aux,sizeof(Usuario),1,profes);
+					}	
+				}while(error!=0);
+				
+				strcpy(verificado.usuario,user);
+				strcpy(verificado.clave,password);
+				strcpy(verificado.ApeyNom,ApeyNom);
+				
+				fwrite(&verificado,sizeof(Usuario),1,profes);
+				fclose(profes);	
+				break;
+			}
+		case 2:
+			{
+				do
+				{
+					getUser(user);
+					getPass(password);
+					getName(ApeyNom);
+					recep=fopen("Recepcionistas.dat","ab+");
+					if(profes==NULL)
+					{
+						system("cls");
+						printf("\n\t======================================================================\n");
+						printf("\n\t\t[Error] - no se pudo abrir el archivo 'Recepcionistas.dat'\n");
+						printf("\n\t======================================================================\n");
+						system("pause");
+						exit(1);
+					}
+					fread(&aux,sizeof(Usuario),1,recep);
+					while(!feof(recep))
+					{
+						cmp=strcmp(user,aux.usuario);
+						if(cmp==0)
+						{
+							system("cls");
+							printf("\n\t======================================================================\n");
+							printf("\n\t[Error] - El usuario ya esta tomado, intente nuevamente...\n\n");
+							printf("\n\t======================================================================\n");
+							system("pause");
+							error=1;
+						}
+						fread(&aux,sizeof(Usuario),1,recep);
+					}	
+				}while(error!=0);
+				
+				strcpy(verificado.usuario,user);
+				strcpy(verificado.clave,password);
+				strcpy(verificado.ApeyNom,ApeyNom);
+				
+				fwrite(&verificado,sizeof(Usuario),1,recep);
+				fclose(profes);	
+				break;
+			}
 	}
 }
-*/
+
+
+
 
