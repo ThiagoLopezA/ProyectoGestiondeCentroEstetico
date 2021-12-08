@@ -68,7 +68,7 @@ struct Turnos
 
 struct estado
 {
-	bool status;
+	bool status=0;
 	char ApeyNom[50];
 	int id;	
 };
@@ -353,7 +353,7 @@ void encabezado(fecha aux, bool bandFec)
 		printf("\t\t\t     |Proyecto Centro Estetico|\n");
 		printf("\t\tPrograma para ayudar a la atencion y gestion de pacientes\n\t\t\t\tdel centro estetico.");
 		printf("\n\t======================================================================\n");
-		printf("\n\t\tFecha: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
+		printf("\n\tFecha: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
 		putchar('\n');
 		for (int i=0; i < 87; i++) {
 		putchar('_');
@@ -365,7 +365,7 @@ void encabezado(fecha aux, bool bandFec)
 		printf("\t\t\t     |Proyecto Centro Estetico|\n");
 		printf("\t\tPrograma para ayudar a la atencion y gestion de pacientes\n\t\t\t\tdel centro estetico.");
 		printf("\n\t======================================================================\n");
-		printf("\n\t\tFecha Actualizada: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
+		printf("\n\tFecha Actualizada: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
 		putchar('\n');
 		for (int i=0; i < 87; i++) {
 		putchar('_');
