@@ -90,11 +90,11 @@ struct estado
 	void encabezado(); // Encabezado de los menus.
 	void encRegCl(); // Encabezado Registo de Cliente
 	void encRegT(); // Encabezado Registo de Turno
-	int menu(fecha aux);	//Menu principal.
+	int menu(fecha aux, bool bandFec);	//Menu principal.
 	void getFecha(fecha &aux);
-	void moduloEspacio(estado &profesional, fecha aux); //Menu del modulo de espacios con usuario logueado.
-	void moduloRecepcion(estado &recepcionista, fecha aux); //Menu del modulo de recepcionistas.
-	void moduloAdmin(fecha aux); //Menu del modulo de administracion.
+	void moduloEspacio(estado &profesional, fecha aux, bool bandFec); //Menu del modulo de espacios con usuario logueado.
+	void moduloRecepcion(estado &recepcionista, fecha aux, bool bandFec); //Menu del modulo de recepcionistas.
+	void moduloAdmin(fecha aux, bool bandFec); //Menu del modulo de administracion.
 	
 	//Funciones de menus
 	void login(estado &profesional,estado &recepcionista,int mod); //inicio de sesion de profesionales/recepcionistas.
@@ -127,14 +127,14 @@ int main()
 	int Menu,ModEspacio,ModRecep,ModAdmin;
 	estado profesional;
 	estado recepcionista;
-	bool sesionProf,sesionRecep;
+	bool sesionProf,sesionRecep,bandFec=0;
 	fecha fActual;
 	
 	
 	getFecha(fActual);
 	do
 	{
-		Menu=menu(fActual);
+		Menu=menu(fActual, bandFec);
 		switch(Menu)
 		{
 			case 1:
@@ -144,12 +144,12 @@ int main()
 						login(profesional,recepcionista,1); // El numero de modulo va a hacer q varie el archivo donde busque el usuario.
 						if(profesional.status==1)
 						{
-							moduloEspacio(profesional,fActual);
+							moduloEspacio(profesional,fActual,bandFec);
 						}
 					}
 					else
 					{
-						moduloEspacio(profesional,fActual);	
+						moduloEspacio(profesional,fActual,bandFec);	
 					}
 					break;
 				}
@@ -160,18 +160,25 @@ int main()
 						login(profesional,recepcionista,2);
 						if(recepcionista.status==1)
 						{
-							moduloRecepcion(recepcionista,fActual);
+							moduloRecepcion(recepcionista,fActual,bandFec);
 						}
 					}
 					else
 					{
-						moduloRecepcion(recepcionista,fActual);
+						moduloRecepcion(recepcionista,fActual,bandFec);
 					}
 					break;
 				}
 			case 3:
 				{
-					moduloAdmin(fActual);
+					moduloAdmin(fActual,bandFec);
+					break;
+				}
+			case 4:
+				{
+					
+					getFecha(fActual);
+					bandFec=1;
 					break;
 				}
 		}
@@ -337,17 +344,32 @@ void eEncontrar()
 	system("pause");
 }
 	//Encabezados
-void encabezado(fecha aux)
+void encabezado(fecha aux, bool bandFec)
 {
-
-	printf("\n\t======================================================================\n");
-	printf("\t\t\t     |Proyecto Centro Estetico|\n");
-	printf("\t\tPrograma para ayudar a la atencion y gestion de pacientes\n\t\t\t\tdel centro estetico.");
-	printf("\n\t======================================================================\n");
-	printf("\n\t\tFecha: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
-	putchar('\n');
-	for (int i=0; i < 87; i++) {
+	
+	if(bandFec == 0)
+	{
+		printf("\n\t======================================================================\n");
+		printf("\t\t\t     |Proyecto Centro Estetico|\n");
+		printf("\t\tPrograma para ayudar a la atencion y gestion de pacientes\n\t\t\t\tdel centro estetico.");
+		printf("\n\t======================================================================\n");
+		printf("\n\t\tFecha: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
+		putchar('\n');
+		for (int i=0; i < 87; i++) {
 		putchar('_');
+		}
+	}
+	else 
+	{
+		printf("\n\t======================================================================\n");
+		printf("\t\t\t     |Proyecto Centro Estetico|\n");
+		printf("\t\tPrograma para ayudar a la atencion y gestion de pacientes\n\t\t\t\tdel centro estetico.");
+		printf("\n\t======================================================================\n");
+		printf("\n\t\tFecha Actualizada: %02i/%02i/%i",aux.dia,aux.mes,aux.anio);
+		putchar('\n');
+		for (int i=0; i < 87; i++) {
+		putchar('_');
+		}
 	}
 }
 void encRegCl()
@@ -490,7 +512,7 @@ void getFecha(fecha &aux)
 	
 }
 
-int menu(fecha aux)
+int menu(fecha aux, bool bandFec)
 {
 	float x;
 	bool entero,opcValida,error=0;
@@ -498,7 +520,7 @@ int menu(fecha aux)
 	do
 	{
 		system("cls");
-		encabezado(aux);
+		encabezado(aux,bandFec);
 		printf("\n\n\tMenu principal: \n\n");
 		printf("\t[1]. Modulo Espacios.\n");
 		printf("\t[2]. Modulo Recepcion.\n");
@@ -763,7 +785,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 	
 }
 
-void moduloEspacio(estado &profesional,fecha aux)
+void moduloEspacio(estado &profesional,fecha aux, bool bandFec)
 {
 	float x;
 	bool entero,opcValida,error;
@@ -775,7 +797,7 @@ void moduloEspacio(estado &profesional,fecha aux)
 	{
 		
 		system("cls");
-		encabezado(aux);
+		encabezado(aux, bandFec);
 		printf("\n\n\tModulo Espacios: \n\n");
 		printf("\tUsuario : ");
 		puts(profesional.ApeyNom);
@@ -827,7 +849,7 @@ void moduloEspacio(estado &profesional,fecha aux)
 	}
 }
 
-void moduloRecepcion(estado &recepcionista,fecha aux)
+void moduloRecepcion(estado &recepcionista,fecha aux, bool bandFec)
 {
 	float x;
 	bool entero,opcValida,error;
@@ -840,7 +862,7 @@ void moduloRecepcion(estado &recepcionista,fecha aux)
 	{
 		
 		system("cls");
-		encabezado(aux);
+		encabezado(aux, bandFec);
 		printf("\n\n\tModulo del recepcionista: \n\n");
 		printf("\tUsuario : ");
 		puts(recepcionista.ApeyNom);
@@ -896,7 +918,7 @@ void moduloRecepcion(estado &recepcionista,fecha aux)
 	}
 }
 
-void moduloAdmin(fecha aux)
+void moduloAdmin(fecha aux, bool bandFec)
 {
 	float x;
 	bool entero,opcValida,error;
@@ -906,7 +928,7 @@ void moduloAdmin(fecha aux)
 	{
 		
 		system("cls");
-		encabezado(aux);
+		encabezado(aux, bandFec);
 		printf("\n\n\tModulo Administracion: \n\n");
 		printf("\t[1]. Registrar Profesional.\n");
 		printf("\t[2]. Registrar Usuario Recepcionista.\n");
