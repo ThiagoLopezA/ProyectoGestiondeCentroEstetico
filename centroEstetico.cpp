@@ -18,14 +18,12 @@ struct auxiliar
 	char ApeyNom[60];
 	int posicion;
 };
-
 struct fecha
 {
 	int dia;
 	int mes;
 	int anio;
 };
-
 struct Profesional
 {
 	int id;
@@ -33,7 +31,6 @@ struct Profesional
 	char telefono[25];
 	int puntaje=0;
 };
-
 struct Usuario
 {
 	char usuario[50];
@@ -41,9 +38,6 @@ struct Usuario
 	char ApeyNom[60];
 	Profesional profesional;
 };
-
-
-
 struct Cliente
 {
 	char ApeyNom[60];
@@ -54,7 +48,6 @@ struct Cliente
 	float peso;
 	char telefono[25];
 };
-
 struct Turnos
 {
 	char nombreProfesional[50];
@@ -65,7 +58,6 @@ struct Turnos
 	bool atendido=0;
 	bool hoy=0;
 };
-
 struct estado
 {
 	bool status=0;
@@ -74,7 +66,6 @@ struct estado
 };
 
 // Prototipos
-
 	//Validaciones
 	bool valEnt(float x);  // Valida que el numero ingresado sea entero.
 	bool valOpc(float x, int min, int may); // Valida que la opcion ingresada se encuentre en el rango de las validas.
@@ -86,6 +77,7 @@ struct estado
 	void eUsuario(); // Mensaje para cuando el inicio de sesion es incorrecto.
 	void eConjunto(int min, int may); // Mensaje para cuando el numero no esta en un conjunto de numeros validos.
 	void eChar(); // Mensaje para cuando el caracter de decision es incorrecto.
+	
 	//Menus
 	void encabezado(); // Encabezado de los menus.
 	void encRegCl(); // Encabezado Registo de Cliente
@@ -102,24 +94,31 @@ struct estado
 	//Funciones del modulo espacio.
 	void getListaTurnos(fecha fActual,estado profesional);
 	void getObservacion(estado profesional,fecha fActual);
+	
 	//Funciones del modulo recepcion.
 	void getCliente(FILE *cliente);
 	void getTurno(FILE *turnos, FILE *profe, FILE *cliente);
 	void getListado(FILE *cliente);
+	void getAtencionesPorFecha();
+	
 	//Funciones del modulo administracion.
 	void registrar(FILE *profes,FILE *recep,int mod);
 	void getName(char ApeyNom[50]);
 	void getPass(char password[50]);
 	void getUser (char user[50]);
-// Var global
-Turnos turno; // Registro para turnos.
-FILE *cliente;
-FILE *turnos;
-FILE *profe;
-FILE *recep;
-FILE *temporal;
-// Main
+	void getAtencionesPorProf();
+	void getRanking();
+	void fichaTecnica();
+	
+	// Var global
+	Turnos turno; // Registro para turnos.
+	FILE *cliente;
+	FILE *turnos;
+	FILE *profe;
+	FILE *recep;
+	FILE *temporal;
 
+	// Main
 int main()
 {
 	setlocale(LC_ALL, "spanish");
@@ -190,9 +189,8 @@ int main()
 // Funciones
 
 	//Validaciones
-
 bool valEnt(float x)
-{
+{	
 	int entero;
 	float decimal;
 	
@@ -208,7 +206,6 @@ bool valEnt(float x)
 		return 1;
 	}
 }
-		
 bool valOpc(float x, int min, int may)
 {
 	if(x<min || x>may)
@@ -220,7 +217,6 @@ bool valOpc(float x, int min, int may)
 		return 1;
 	}
 }
-
 bool valFec(float x, int min, int max)
 {
 	bool vEnt,vOpc;
@@ -238,76 +234,68 @@ bool valFec(float x, int min, int max)
 	}
 }
 
-	//Mensajes
-	
+	//Mensajes	
 void eEntero()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #001:\n\t\tEl numero ingresado debe ser entero, reintente.\n");
+	printf("\n\t\t[Error] - El numero ingresado debe ser entero, reintente.\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");
 }
-
 void eNumInval()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #002:\n\t\tEl numero ingresado no es valido.\n");
+	printf("\n\t\t[Error] - El numero ingresado no es valido.\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");
 }
-
 void eUsuario()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #003:\n\t\tEl usuario o clave no es valida.\n");
+	printf("\n\t\t[Error] - El usuario o clave no es valida.\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");
 }
-
 void eConjunto(int min, int may)
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #004:\n\t\tEl numero debe estar entre %i y %i.\n",min,may);
+	printf("\n\t\t[Error] - El numero debe estar entre %i y %i.\n",min,may);
 	printf("\n\t======================================================================\n\n");
 	system("pause");
 }
-
 void eChar()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #005:\n\t\tEl caracter es incorrecto, solo se acepta (S o N)\n");
+	printf("\n\t\t[Error] - El caracter es incorrecto, solo se acepta (S o N)\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");	
 }
-
 void eNegativo()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #006:\n\t\tNo se permiten los numeros negativos.\n");
+	printf("\n\t\t[Error] - No se permiten los numeros negativos.\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");		
 }
-
 void eVacio()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #007:\n\t\tNo se permite saltear este campo.\n");
+	printf("\n\t\t[Error] - No se permite saltear este campo.\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");
 }
-
 void eUsuario2()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #008:\n\t\tEl usuario debe tener:\n\t-Entre 6 y 10 caracteres.\n");
+	printf("\n\t\t[Error] - El usuario debe tener:\n\t-Entre 6 y 10 caracteres.\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");	
 }
@@ -315,7 +303,7 @@ void eUsuario3()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #009:\n\t\tEl nombre de usuario no esta disponible.\n");
+	printf("\n\t\t[Error] - El nombre de usuario no esta disponible.\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");
 }
@@ -323,7 +311,7 @@ void eUsuario4()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #010:\n\t\tEl nombre de usuario debe contener:\n\t-Empezar con minuscula\n\t-Tener al menos 2 letras mayusculas\n\t-Tener como maximo 3 digitos.\n\n");
+	printf("\n\t\t[Error] - El nombre de usuario debe contener:\n\t-Empezar con minuscula\n\t-Tener al menos 2 letras mayusculas\n\t-Tener como maximo 3 digitos.\n\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");
 }
@@ -331,7 +319,7 @@ void eClave()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #011:\n\t\tLa clave debe estar.\n");
+	printf("\n\t\t[Error] - La clave debe estar.\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");	
 }
@@ -339,10 +327,11 @@ void eEncontrar()
 {
 	system("cls");
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tError #012:\n\t\tNo se encontro a la persona reintente.\n");
+	printf("\n\t\t[Error] - No se encontro a la persona reintente.\n");
 	printf("\n\t======================================================================\n\n");
 	system("pause");
 }
+	
 	//Encabezados
 void encabezado(fecha aux, bool bandFec)
 {
@@ -375,31 +364,29 @@ void encabezado(fecha aux, bool bandFec)
 void encRegCl()
 {	
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tRegistro de Cliente\n");
+	printf("\n\t\t   Registro de Cliente\n");
 	printf("\n\t======================================================================\n\n");
 }
-
 void encRegT()
 {	
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tRegistro de Turno\n");
+	printf("\n\t\t   Registro de Turno\n");
 	printf("\n\t======================================================================\n\n");
 }
-
 void encRegUserProf()
 {
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tRegistro de usuario profesional\n");
+	printf("\n\t\t   Registro de usuario profesional\n");
 	printf("\n\t======================================================================\n\n");
 }
 void encRegUserRec()
 {
 	printf("\n\t======================================================================\n");
-	printf("\n\t\tRegistro de usuario recepcionista\n");
+	printf("\n\t\t   Registro de usuario recepcionista\n");
 	printf("\n\t======================================================================\n\n");
 }
+
 	//Menus
-	
 void getFecha(fecha &aux)
 {
 	bool esEntero,fechaValida, error=0;
@@ -511,7 +498,6 @@ void getFecha(fecha &aux)
 	}while(salir!=1);
 	
 }
-
 int menu(fecha aux, bool bandFec)
 {
 	float x;
@@ -551,7 +537,6 @@ int menu(fecha aux, bool bandFec)
 	
 	return x;		
 }
-
 void login(estado &profesional,estado &recepcionista,int mod)
 {
 	Usuario profes;
@@ -580,7 +565,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 							system("cls");
 							printf("\n\t======================================================================\n");
 							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
-							printf("\n\t======================================================================\n");
+							printf("\n\t======================================================================\n\n\n");
 							system("pause");
 							error=1;
 						}
@@ -607,7 +592,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 							system("cls");
 							printf("\n\t======================================================================\n");
 							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
-							printf("\n\t======================================================================\n");
+							printf("\n\t======================================================================\n\n\n");
 							system("pause");
 							error=1;
 						}
@@ -619,7 +604,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 						system("cls");
 						printf("\n\t======================================================================\n");
 						printf("\n\t[Error] - No se pudo abrir el archivo 'Profesionales.dat'.\n");
-						printf("\n\t======================================================================\n");
+						printf("\n\t======================================================================\n\n\n");
 						system("pause");
 						exit(1);
 					}
@@ -637,9 +622,9 @@ void login(estado &profesional,estado &recepcionista,int mod)
 							{
 								system("cls");
 								printf("\n\t======================================================================\n");
-								printf("\n\tBienvenido ");
+								printf("\n\t\t   Bienvenido ");
 								puts(aux.ApeyNom);
-								printf("\n\t======================================================================\n");
+								printf("\n\t======================================================================\n\n\n");
 								system("pause");
 							}
 							else
@@ -647,7 +632,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 								system("cls");
 								printf("\n\t======================================================================\n");
 								printf("\n\t[Error] - Clave incorrecta\n");
-								printf("\n\t======================================================================\n");
+								printf("\n\t======================================================================\n\n\n");
 								system("pause");
 							}
 							break;
@@ -660,7 +645,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 						system("cls");
 						printf("\n\t======================================================================\n");
 						printf("\n\t[Error] - El usuario no se encuentra en la base de datos.\n");
-						printf("\n\t======================================================================\n");
+						printf("\n\t======================================================================\n\n\n");
 						system("pause");
 					}
 					else
@@ -689,7 +674,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 							system("cls");
 							printf("\n\t======================================================================\n");
 							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
-							printf("\n\t======================================================================\n");
+							printf("\n\t======================================================================\n\n\n");
 							system("pause");
 							error=1;
 						}
@@ -712,7 +697,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 							system("cls");
 							printf("\n\t======================================================================\n");
 							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
-							printf("\n\t======================================================================\n");
+							printf("\n\t======================================================================\n\n\n");
 							system("pause");
 							error=1;
 						}
@@ -724,7 +709,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 						system("cls");
 						printf("\n\t======================================================================\n");
 						printf("\n\t[Error] - No se pudo abrir el archivo 'Recepcionistas.dat'.\n");
-						printf("\n\t======================================================================\n");
+						printf("\n\t======================================================================\n\n\n");
 						system("pause");
 						exit(1);
 					}
@@ -742,9 +727,9 @@ void login(estado &profesional,estado &recepcionista,int mod)
 							{
 								system("cls");
 								printf("\n\t======================================================================\n");
-								printf("\n\tBienvenido ");
+								printf("\n\t\t   Bienvenido ");
 								puts(aux.ApeyNom);
-								printf("\n\t======================================================================\n");
+								printf("\n\t======================================================================\n\n\n");
 								system("pause");
 							}
 							else
@@ -752,7 +737,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 								system("cls");
 								printf("\n\t======================================================================\n");
 								printf("\n\t[Error] - Clave incorrecta\n");
-								printf("\n\t======================================================================\n");
+								printf("\n\t======================================================================\n\n\n");
 								system("pause");
 							}
 							break;
@@ -784,7 +769,6 @@ void login(estado &profesional,estado &recepcionista,int mod)
 	
 	
 }
-
 void moduloEspacio(estado &profesional,fecha aux, bool bandFec)
 {
 	float x;
@@ -792,10 +776,8 @@ void moduloEspacio(estado &profesional,fecha aux, bool bandFec)
 	int opc;
 	FILE *turnos;
 	FILE *Clientes;
-	
 	do
 	{
-		
 		system("cls");
 		encabezado(aux, bandFec);
 		printf("\n\n\tModulo Espacios: \n\n");
@@ -848,7 +830,6 @@ void moduloEspacio(estado &profesional,fecha aux, bool bandFec)
 			}
 	}
 }
-
 void moduloRecepcion(estado &recepcionista,fecha aux, bool bandFec)
 {
 	float x;
@@ -911,19 +892,23 @@ void moduloRecepcion(estado &recepcionista,fecha aux, bool bandFec)
 				getTurno(turnos,profe,cliente);
 				break;
 			}
+		case 4:
+			{
+				getAtencionesPorFecha();
+				break;
+			}
 		case 5:
 			{
 				getListado(cliente);
+				break;
 			}
 	}
 }
-
 void moduloAdmin(fecha aux, bool bandFec)
 {
 	float x;
 	bool entero,opcValida,error;
 	int opcion;
-	
 	do
 	{
 		
@@ -935,10 +920,11 @@ void moduloAdmin(fecha aux, bool bandFec)
 		printf("\t[3]. Atenciones por profesional.\n");
 		printf("\t[4]. Ranking de profesionales por atenciones.\n");
 		printf("\t[5]. Volver al menu principal.\n");
+		printf("\t[6]. Ficha tecnica de turnos.\n");
 		printf("\n\tIngrese una opcion: ");
 		scanf("%f",&x);
 		entero=valEnt(x);
-		opcValida=valOpc(x,1,5);
+		opcValida=valOpc(x,1,6);
 		if(entero!=1 or opcValida!=1)
 		{
 			error=1;
@@ -971,40 +957,22 @@ void moduloAdmin(fecha aux, bool bandFec)
 				registrar(profe,recep,2);
 				break;
 			}
+		case 3:
+			{
+				getAtencionesPorProf();
+				break;
+			}
+		case 4:
+			{
+				getRanking();
+				break;
+			}
+		case 6:
+			{
+				fichaTecnica();
+			}
 	}
 }
-
-
-/*
-struct Cliente
-{
-	char ApeyNom[60];
-	char domicilio[60];
-	int dni;
-	char localidad[60];
-	fecha fNacimiento;
-	float peso;
-	char telefono[25];
-};
-
-struct Turnos
-{
-	char nombreProfesional[50];
-	char ApeyNom[60];
-	fecha Fecha;
-	int dni;
-	char detalle[380];
-	bool atendido;
-	bool hoy=0;
-};
-
-struct estado
-{
-	bool status;
-	char ApeyNom[50];	
-};
-
-*/
 
 // Modulo Espacios //
 void getListaTurnos(fecha fActual,estado profesional)
@@ -1032,13 +1000,13 @@ void getListaTurnos(fecha fActual,estado profesional)
 		fread(&archivo[i],sizeof(Turnos),1,turnos);
 	}
 	fclose(turnos);
+	
 	if(i==0)
 	{
 		system("cls");
 		printf("\n\t======================================================================\n");
 		printf("\n\t[Error] - No hay turnos registrados.\n");
 		printf("\n\t======================================================================\n");
-		system("pause");
 	
 	}	
 	else
@@ -1070,36 +1038,17 @@ void getListaTurnos(fecha fActual,estado profesional)
 				cmp=strcmp(archivo[m].nombreProfesional,profesional.ApeyNom);
 				if(cmp == 0)
 				{
-					printf("\n\t%02i.- ",numLista);
+					printf("\n\t%02i.- ",numLista+1);
 					puts(archivo[m].ApeyNom);
 					numLista++;
 				}
 			}
 		}
 	}
-	printf("\n\t======================================================================\n");
+	printf("\n\t======================================================================\n\n\n");
 	system("pause");
-	
-	temporal=fopen("temp.dat","ab+");
-	if(temporal == NULL)
-	{
-		system("cls");
-		printf("\n\t======================================================================\n");
-		printf("\n\t[Error] - El archivo no se pudo abrir el archivo 'temp.dat'...\n");
-		printf("\n\t======================================================================\n");
-		system("pause");
-		exit(1);
-	}
-	
-	for(int k=0;k<i;k++)
-	{
-		fwrite(&archivo[k],sizeof(Turnos),1,temporal);
-	}
-	
-	fclose(temporal);
-	remove("Turnos.dat");
-	rename("temp.dat","Turnos.dat");
 }
+/*
 void getObservacion(estado profesional,fecha fActual)
 {
 	char buscar[60];
@@ -1128,6 +1077,7 @@ void getObservacion(estado profesional,fecha fActual)
 	}while(error!=0);
 	
 	turnos=fopen("Turnos.dat","ab+");
+	rewind(turnos);
 	if(turnos == NULL)
 	{
 		system("cls");
@@ -1137,7 +1087,7 @@ void getObservacion(estado profesional,fecha fActual)
 		system("pause");
 		exit(1);
 	}
-	
+
 	fread(&archivo[i],sizeof(Turnos),1,turnos);
 	while(!feof(turnos))
 	{
@@ -1145,6 +1095,7 @@ void getObservacion(estado profesional,fecha fActual)
 		fread(&archivo[i],sizeof(Turnos),1,turnos);
 	}
 	fclose(turnos);
+	
 	if(i==0)
 	{
 		system("cls");
@@ -1157,6 +1108,17 @@ void getObservacion(estado profesional,fecha fActual)
 	{
 		for(int j=0;j<=i;j++)
 		{
+			if(archivo[j].Fecha.dia==fActual.dia)
+			{
+				if(archivo[j].Fecha.mes==fActual.mes)
+				{
+					if(archivo[j].Fecha.anio==fActual.anio)
+					{
+						archivo[j].hoy=1;
+					}
+				}
+			}
+			
 			if(archivo[j].atendido!=1 && archivo[j].hoy==1)
 			{
 				cmp=strcmp(archivo[j].nombreProfesional,profesional.ApeyNom);
@@ -1217,7 +1179,7 @@ void getObservacion(estado profesional,fecha fActual)
 				puts(paciente.domicilio);
 				edad=(fActual.anio)-(paciente.fNacimiento.anio);
 				printf("\tEdad: %i",edad);
-				printf("\n\tPeso: %.2f",paciente.peso);
+				printf("\n\tPeso: %.2f\n",paciente.peso);
 				printf("\n\t======================================================================\n");
 				printf("\n\tObservacion: ");
 				_flushall();
@@ -1235,6 +1197,7 @@ void getObservacion(estado profesional,fecha fActual)
 			}while(error!=0);
 			
 			archivo[posicion].atendido=1;
+			archivo[posicion].hoy=0;
 			
 			temporal=fopen("temp.dat","ab+");
 			if(temporal == NULL)
@@ -1280,8 +1243,12 @@ void getObservacion(estado profesional,fecha fActual)
 			{
 				if(auxiliar[a].profesional.id==profesional.id)
 				{
-					auxiliar[a].profesional.puntaje++;
-					break;
+					auxiliar[a].profesional.puntaje=(auxiliar[a].profesional.puntaje)+1;
+					system("cls");
+					printf("\n\t======================================================================\n");
+					printf("\n\t\t   Se agrego un punto al profesional! Tiene un total de %02i\n",auxiliar[a].profesional.puntaje);
+					printf("\n\t======================================================================\n");
+					system("pause");
 				}
 			}
 			
@@ -1300,20 +1267,221 @@ void getObservacion(estado profesional,fecha fActual)
 			{
 				fwrite(&auxiliar[u],sizeof(Usuario),1,temporal);
 			}
-			
 			fclose(temporal);
 			
 			remove("Profesionales.dat");
 			rename("temp.dat","Profesionales.dat");
 				
 		}
+	}	
+}
+*/
+
+/*
+struct Profesional
+{
+	int id;
+	int dni;
+	char telefono[25];
+	int puntaje=0;
+};
+struct Usuario
+{
+	char usuario[50];
+	char clave[50];
+	char ApeyNom[60];
+	Profesional profesional;
+};
+struct Cliente
+{
+	char ApeyNom[60];
+	char domicilio[60];
+	int dni;
+	char localidad[60];
+	fecha fNacimiento;
+	float peso;
+	char telefono[25];
+};
+struct Turnos
+{
+	char nombreProfesional[50];
+	char ApeyNom[60];
+	fecha Fecha;
+	int dni;
+	char detalle[380];
+	bool atendido=0;
+	bool hoy=0;
+};
+struct estado
+{
+	bool status=0;
+	char ApeyNom[50];
+	int id;	
+};
+*/
+void getObservacion(estado profesional,fecha fActual)
+{
+	char nombrePaciente[60];
+	int cmp, i=0, pos, edad;
+	bool error, encontrado=0;
+	Turnos infoTurnos[100];
+	Cliente infoPaciente;
+	
+	do
+	{
+		system("cls");
+		printf("\n\t======================================================================\n");
+		printf("\n\tDigite el nombre del paciente: ");
+		_flushall();
+		gets(nombrePaciente);
+		cmp=strcmp(nombrePaciente,"");
+		if(cmp == 0)
+		{
+			error=1;
+			eVacio();
+		}
+		else
+		{
+			error=0;
+		}
+	}while(error!=0);
+	
+	turnos=fopen("Turnos.dat","ab+");
+	if(turnos == NULL)
+	{
+		system("cls");
+		printf("\n\t======================================================================\n");
+		printf("\n\t[Error] - No se pudo abrir el archivo 'temp.dat'...\n");
+		printf("\n\t======================================================================\n\n");
+		system("pause");
+		exit(1);
+	}
+	rewind(turnos);
+	fread(&infoTurnos[i],sizeof(Turnos),1,turnos);
+	while(!feof)
+	{
+		i++;
+		fread(&infoTurnos[i],sizeof(Turnos),1,turnos);
+	}
+	fclose(turnos);
+	
+	encontrado=0;
+	
+	for(int j=0; j<=i; j++)
+	{
+		if(infoTurnos[j].Fecha.dia==fActual.dia)
+			{
+				if(infoTurnos[j].Fecha.mes==fActual.mes)
+				{
+					if(infoTurnos[j].Fecha.anio==fActual.anio)
+					{
+						infoTurnos[j].hoy=1;
+					}
+				}
+			}
+		if(infoTurnos[j].atendido!=1 && infoTurnos[j].hoy==1)
+			{
+				cmp=strcmp(infoTurnos[j].nombreProfesional,profesional.ApeyNom);
+				if(cmp==0)
+				{
+					cmp=strcmp(infoTurnos[j].ApeyNom,nombrePaciente);
+					if(cmp==0)
+					{
+						pos=j;
+						encontrado=1;
+						break;
+					}	
+				}
+			}
 	}
 	
+	if(encontrado!=1)
+	{
+		system("cls");
+		printf("\n\t======================================================================\n");
+		printf("\n\t[Error] - No hay ningun turno para hoy con ese paciente...\n");
+		printf("\n\t======================================================================\n\n");
+		system("pause");
+	}
+	else
+	{
+		cliente=fopen("Clientes.dat","ab+");
+		if(cliente == NULL)
+		{
+		system("cls");
+		printf("\n\t======================================================================\n");
+		printf("\n\t[Error] - No se pudo abrir el archivo 'Clientes.dat'...\n");
+		printf("\n\t======================================================================\n\n");
+		system("pause");
+		exit(1);
+		}
+		
+		fread(&infoPaciente,sizeof(Cliente),1,cliente);
+		while(!feof(cliente))
+		{
+			cmp=strcmp(infoPaciente.ApeyNom,infoTurnos[pos].ApeyNom);
+			if(cmp == 0)
+			{
+				break;
+			}
+			fread(&infoPaciente,sizeof(Cliente),1,cliente);
+		}
+		fclose(cliente);
+		
+		do
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\tNombre del paciente: ");
+			puts(infoTurnos[pos].ApeyNom);
+			printf("\tDNI: %i",infoPaciente.dni);
+			printf("\n\tDomicilio: ");
+			puts(infoPaciente.domicilio);
+			edad=(fActual.anio)-(infoPaciente.fNacimiento.anio);
+			printf("\tEdad: %i",edad);
+			printf("\n\tPeso: %.2f\n",infoPaciente.peso);
+			printf("\n\t======================================================================\n");
+			printf("\n\tObservacion: ");
+			_flushall();
+			gets(infoTurnos[pos].detalle);
+			cmp=strcmp(infoTurnos[pos].detalle,"");
+			if(cmp==0)
+			{
+				error=1;
+				eVacio();
+			}
+			else
+			{
+				infoTurnos[pos].atendido=1;
+				infoTurnos[pos].hoy=0;
+				error=0;
+			}
+		}while(error!=0);
+		
+		temporal=fopen("turnosActualizados.dat","ab+");
+		if(temporal == NULL)
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t[Error] - No se pudo abrir el archivo 'turnosActualizados.dat'...\n");
+			printf("\n\t======================================================================\n\n");
+			system("pause");
+			exit(1);
+		}
+		
+		for(int k=0;k<=i;k++)
+		{
+			fwrite(&infoTurnos[k],sizeof(Turnos),1,temporal);
+		}
+		fclose(temporal);
+		
+		remove("Turnos.dat");
+		rename("turnosActualizados.dat","Turnos.dat");	
+	}
 	
 }
 
 // Modulo Recepcion //
-
 void getCliente(FILE *cliente)
 {
 
@@ -1413,7 +1581,7 @@ void getCliente(FILE *cliente)
 		{
 			system("cls");
 			encRegCl();
-			printf("\n\tFecha de Nacimiento : ");
+			printf("\n\tFecha de Nacimiento: DD/MM/AAAA\n");
 			printf("\n\tDia : ");
 			scanf("%f",&aux);
 			v = valFec(aux,1,30);
@@ -1433,7 +1601,7 @@ void getCliente(FILE *cliente)
 		{
 			system("cls");
 			encRegCl();
-			printf("\n\tFecha de Nacimiento : ");
+			printf("\n\tFecha de Nacimiento: %02i/MM/AAAA\n",temp.fNacimiento.dia);
 			printf("\n\tMes : ");
 			scanf("%f",&aux);
 			v = valFec(aux,1,12);
@@ -1453,7 +1621,7 @@ void getCliente(FILE *cliente)
 		{
 			system("cls");
 			encRegCl();
-			printf("\n\tFecha de Nacimiento : ");
+			printf("\n\tFecha de Nacimiento: %02i/%02i/AAAA\n",temp.fNacimiento.dia,temp.fNacimiento.mes);
 			printf("\n\tAnio : ");
 			scanf("%f",&aux);
 			v = valFec(aux,2000,3000);
@@ -1514,7 +1682,6 @@ void getCliente(FILE *cliente)
 		{
 			system("cls");
 			encRegCl();
-			printf("\n\t-------------------\n");
 			printf("\n\tApellido y Nombre : ");
 			puts(temp.ApeyNom);
 			printf("\n\tLocalidad : ");
@@ -1562,12 +1729,6 @@ void getCliente(FILE *cliente)
 	fwrite(&temp,sizeof(Cliente),1,cliente);
 	fclose(cliente);	
 }
-
-
-
-
-
-////////////////////////////////
 void getTurno(FILE *turnos, FILE *profe, FILE *cliente)
 {
 	bool v, error,cmp;
@@ -1648,10 +1809,10 @@ void getTurno(FILE *turnos, FILE *profe, FILE *cliente)
 			encRegT();
 			printf("\n\tDni del Cliente (8 digitos): ");
 			scanf("%d",&temp.dni);
-			if(temp.dni<1000000 or temp.dni>9999999)
+			if(temp.dni<10000000 or temp.dni>99999999)
 			{
 				error=1;
-				eConjunto(1000000,9999999);
+				eConjunto(10000000,99999999);
 			}
 			else
 			{
@@ -1668,6 +1829,7 @@ void getTurno(FILE *turnos, FILE *profe, FILE *cliente)
 				}
 				else
 				{
+					encontrado=0;
 					fread(&temp2,sizeof(Cliente),1,cliente);
 					while(!feof(cliente))
 					{
@@ -1803,7 +1965,6 @@ void getTurno(FILE *turnos, FILE *profe, FILE *cliente)
 	
 	//El detalle del turno se carga cuando se haya realizado la visita//
 }
-
 void getListado(FILE *cliente)
 {
 	Cliente temp;
@@ -1834,8 +1995,220 @@ void getListado(FILE *cliente)
 	}
 	system("pause");
 }
-// Modulo Administracion //
+void getAtencionesPorFecha()
+{
+	char nombreDoctor[50];
+	fecha fechaDeAtencion;
+	int cmp;
+	bool error, hayTurnos=0, validar,confirmar,buscar,encontrado=0;
+	Turnos temp;
+	float aux;
+	Usuario auxiliar;
+	
+		do
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\tIngrese el nombre del doctor: ");
+			_flushall();
+			gets(nombreDoctor);
+			cmp=strcmp(nombreDoctor,"");
+			if(cmp==0)
+			{
+				error=1;
+				eVacio();
+			}
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
+			
+		profe=fopen("Profesionales.dat","ab+");
+		if(profe==NULL)
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t[Error] - No se pudo abrir el archivo 'Profesionales.dat'...\n");
+			printf("\n\t======================================================================\n");
+			system("pause");
+			exit(1);
+		}
+		fread(&auxiliar,sizeof(Usuario),1,profe);
+		while(!feof(profe))
+		{
+			cmp=strcmp(auxiliar.ApeyNom,nombreDoctor);
+			if(cmp==0)
+			{
+				encontrado=1;
+			}
+			fread(&auxiliar,sizeof(Usuario),1,profe);
+		}
+		fclose(profe);
+		if(encontrado!=1)
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t[Error] - No se encontro al doctor en la base de datos...\n");
+			printf("\n\t======================================================================\n");
+			system("pause");
+		}
+		else
+		{
+			do
+			{
+				do
+				{
+					system("cls");
+					printf("\n\t======================================================================\n");
+					printf("\n\tIngrese el nombre del doctor: ");
+					puts(nombreDoctor);
+					printf("\n\tIngrese la fecha: DD/MM/AAAA");
+					printf("\n\tDia: ");
+					scanf("%f",&aux);
+					validar=valOpc(aux,1,30);
+					if(validar!=1)
+					{
+						error=1;
+						eConjunto(1,30);
+					}
+					else
+					{
+						error=0;
+						fechaDeAtencion.dia=aux;
+					}	
+				}while(error!=0);
+				
+				
+				do
+				{
+					system("cls");
+					printf("\n\t======================================================================\n");
+					printf("\n\tIngrese el nombre del doctor: ");
+					puts(nombreDoctor);
+					printf("\n\tIngrese la fecha: %02i/MM/AAAA",fechaDeAtencion.dia);
+					printf("\n\tMes: ");
+					scanf("%f",&aux);
+					validar=valOpc(aux,1,12);
+					if(validar!=1)
+					{
+						error=1;
+						eConjunto(1,12);
+					}
+					else
+					{
+						error=0;
+						fechaDeAtencion.mes=aux;
+					}	
+				}while(error!=0);
+				
+				
+				do
+				{
+					system("cls");
+					printf("\n\t======================================================================\n");
+					printf("\n\tIngrese el nombre del doctor: ");
+					puts(nombreDoctor);
+					printf("\n\tIngrese la fecha: %02i/%02i/AAAA",fechaDeAtencion.dia,fechaDeAtencion.mes);
+					printf("\n\tAnio: ");
+					scanf("%f",&aux);
+					validar=valOpc(aux,2000,3000);
+					if(validar!=1)
+					{
+						error=1;
+						eConjunto(2000,3000);
+					}
+					else
+					{
+						error=0;
+						fechaDeAtencion.anio=aux;
+					}	
+				}while(error!=0);
+				
+				do
+				{
+					system("cls");
+					printf("\n\t======================================================================\n");
+					printf("\n\tIngrese el nombre del doctor: ");
+					puts(nombreDoctor);
+					printf("\n\tFecha: %02i/%02i/%i",fechaDeAtencion.dia,fechaDeAtencion.mes,fechaDeAtencion.anio);
+					printf("\n\t======================================================================\n");
+					printf("\n\tEsta informacion es correcta? (S/N): ");
+					_flushall();
+					scanf("%c",&confirmar);	
+					if(confirmar!='S' and confirmar!='N')
+					{
+						error=1;
+						eChar();
+					}
+					else
+					{
+						if(confirmar=='S')
+						{
+							buscar=1;
+							error=0;
+						}
+						else
+						{
+							buscar=0;
+							error=0;
+						}
+					}
+				}while(error!=0);
+	
+			}while(buscar!=1);
+	
+		system("cls");
+		printf("\n\t======================================================================\n");
+		printf("\n\tInforme de atenciones de: ");
+		puts(nombreDoctor);
+		printf("\n\tEn la fecha: %02i/%02i/%i",fechaDeAtencion.dia,fechaDeAtencion.mes,fechaDeAtencion.anio);
+		printf("\n\t======================================================================\n");
+		turnos=fopen("Turnos.dat","ab+");
+		if(turnos==NULL)
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t[Error] - No se pudo abrir el archivo 'Turnos.dat'...\n");
+			printf("\n\t======================================================================\n");
+			system("pause");
+			exit(1);
+		}
+		fread(&temp,sizeof(Turnos),1,turnos);
+		while(!feof(turnos))
+		{
+			hayTurnos=1;
+			if(temp.atendido=1)
+			{
+				if(temp.Fecha.dia==fechaDeAtencion.dia && temp.Fecha.mes==fechaDeAtencion.mes && temp.Fecha.anio==fechaDeAtencion.anio)
+				{
+					cmp=strcmp(temp.nombreProfesional,nombreDoctor);
+					if(cmp==0)
+					{
+						printf("\n\n\tPaciente: ");
+						puts(temp.ApeyNom);
+						printf("\n\tObservacion: ");
+						puts(temp.detalle);
+						printf("\n\t==============\n");
+					}
+				}
+			}
+			fread(&temp,sizeof(Turnos),1,turnos);
+		}
+		fclose(turnos);
+		if(hayTurnos!=1)
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\tEl profesional no recibio a ningun paciente ese dia.\n");
+			printf("\n\t======================================================================\n");
+		}
+		printf("\n\n");
+		system("pause");
+	}
+}
 
+// Modulo Administracion //
 void getUser(char user[50])
 {
 	int cmp,longitud,contadorNum=0,contadorMay=0;
@@ -1926,7 +2299,6 @@ void getUser(char user[50])
 		}
 	}while(error!=0);
 }
-
 void getPass(char password[50])
 {
 	int cmp,longitud;
@@ -2044,7 +2416,6 @@ void getPass(char password[50])
 		}
 	}while(error!=0);
 }
-
 void getName(char ApeyNom[50])
 {
 	int cmp;
@@ -2150,7 +2521,6 @@ void getProfesional(Profesional temp)
 		}
 	}while(error!=0);
 }
-
 void registrar(FILE *profes,FILE *recep,int mod)
 {
 	char user[50];
@@ -2254,7 +2624,237 @@ void registrar(FILE *profes,FILE *recep,int mod)
 			}
 	}
 }
+void getAtencionesPorProf()
+{
+	char nombreDoctor[50];
+	int cmp;
+	bool error, hayTurnos=0,encontrado=0;
+	Turnos temp;
+	float aux;
+	Usuario auxiliar;
+	
+		do
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\tIngrese el nombre del doctor: ");
+			_flushall();
+			gets(nombreDoctor);
+			cmp=strcmp(nombreDoctor,"");
+			if(cmp==0)
+			{
+				error=1;
+				eVacio();
+			}
+			else
+			{
+				error=0;
+			}
+		}while(error!=0);
+			
+		profe=fopen("Profesionales.dat","ab+");
+		if(profe==NULL)
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t[Error] - No se pudo abrir el archivo 'Profesionales.dat'...\n");
+			printf("\n\t======================================================================\n");
+			system("pause");
+			exit(1);
+		}
+		fread(&auxiliar,sizeof(Usuario),1,profe);
+		while(!feof(profe))
+		{
+			cmp=strcmp(auxiliar.ApeyNom,nombreDoctor);
+			if(cmp==0)
+			{
+				encontrado=1;
+			}
+			fread(&auxiliar,sizeof(Usuario),1,profe);
+		}
+		fclose(profe);
+		if(encontrado!=1)
+		{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t[Error] - No se encontro al doctor en la base de datos...\n");
+			printf("\n\t======================================================================\n");
+			system("pause");
+		}
+		else
+		{
+			turnos=fopen("Turnos.dat","ab+");
+			if(turnos==NULL)
+			{
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\t[Error] - No se pudo abrir el archivo 'Profesionales.dat'...\n");
+			printf("\n\t======================================================================\n");
+			system("pause");
+			exit(1);
+			}
+			system("cls");
+			printf("\n\t======================================================================\n");
+			printf("\n\tAtenciones hecha por ");
+			puts(nombreDoctor);
+			printf("\n\t======================================================================\n");
+			fread(&temp,sizeof(Turnos),1,turnos);
+			while(!feof(turnos))
+			{
+				hayTurnos=1;
+				if(temp.atendido==1)
+				{
+					cmp=strcmp(temp.nombreProfesional,nombreDoctor);
+					if(cmp==0)
+					{
+						printf("\n\n\tPaciente: ");
+						puts(temp.ApeyNom);
+						printf("\n\tObservacion: ");
+						puts(temp.detalle);
+						printf("\n\t==============\n");
+					}
+				}
+				fread(&temp,sizeof(Turnos),1,turnos);
+			}
+			fclose(turnos);
+			if(hayTurnos!=1)
+			{
+				system("cls");
+				printf("\n\t======================================================================\n");
+				printf("\n\tEl profesional no recibio a ningun paciente ese dia.\n");
+				printf("\n\t======================================================================\n");
+			}
+			system("pause");
+		}
+}
 
 
+/*
+	char nombreProfesional[50];
+	char ApeyNom[60];
+	fecha Fecha;
+	int dni;
+	char detalle[380];
+	bool atendido=0;
+	bool hoy=0;
+*/
+void getRanking()
+{
+	Usuario archivos[100];
+	Usuario aux;
+	int i=0;
+	
+	profe=fopen("Profesionales.dat","ab+");
+	if(profe == NULL)
+	{
+		system("cls");
+		printf("\n\t======================================================================\n");
+		printf("\n\t[Error] - No se pudo abrir el archivo 'Profesionales.dat'...\n");
+		printf("\n\t======================================================================\n");
+		system("pause");
+		exit(1);
+	}
+	
+	fread(&archivos[i],sizeof(Usuario),1,profe);
+	while(!feof(profe))
+	{
+		i++;
+		fread(&archivos[i],sizeof(Usuario),1,profe);
+	}
+	fclose(profe);
+	if(i==0)
+	{
+		system("cls");
+		printf("\n\t======================================================================\n");
+		printf("\n\t[Error] - No se encuentra ningun profesional registrado...\n");
+		printf("\n\t======================================================================\n");
+		system("pause");
+	}
+	else
+	{
+		for(int k=0; k<=i; k++)
+		{
+			for (int j=0; j<=i;j++)
+			{
+				if(archivos[j].profesional.puntaje > archivos[j+1].profesional.puntaje)
+				{
+					strcpy(aux.usuario,archivos[j].usuario);
+					strcpy(aux.clave,archivos[j].clave);
+					strcpy(aux.ApeyNom,archivos[j].ApeyNom);
+					aux.profesional.id=archivos[j].profesional.id;
+					aux.profesional.dni=archivos[j].profesional.dni;
+					strcpy(aux.profesional.telefono,archivos[j].profesional.telefono);
+					aux.profesional.puntaje=archivos[j].profesional.puntaje;
+					
+					strcpy(archivos[j].usuario,archivos[j+1].usuario);
+					strcpy(archivos[j].clave,archivos[j+1].clave);
+					strcpy(archivos[j].ApeyNom,archivos[j+1].ApeyNom);
+					archivos[j].profesional.id=archivos[j+1].profesional.id;
+					archivos[j].profesional.dni=archivos[j+1].profesional.dni;
+					strcpy(archivos[j].profesional.telefono,archivos[j+1].profesional.telefono);
+					archivos[j].profesional.puntaje=archivos[j+1].profesional.puntaje;
+					
+					strcpy(archivos[j+1].usuario,aux.usuario);
+					strcpy(archivos[j+1].clave,aux.clave);
+					strcpy(archivos[j+1].ApeyNom,aux.ApeyNom);
+					archivos[j+1].profesional.id=aux.profesional.id;
+					archivos[j+1].profesional.dni=aux.profesional.dni;
+					strcpy(archivos[j+1].profesional.telefono,aux.profesional.telefono);
+					archivos[j+1].profesional.puntaje=aux.profesional.puntaje;			
+				}
+			}
+		} 
+		
+		system("cls");
+		printf("\n\t======================================================================\n");
+		printf("\n\t\t   [Ranking de profesionales por atenciones]\n");
+		printf("\n\t======================================================================\n");
+		for(int m=0;m<i;m++)
+		{
+			printf("\n\tNro %02i.- ",m+1);
+			puts(archivos[m].ApeyNom);
+			printf("\tPuntaje: %02i\n",archivos[m].profesional.puntaje);
+			printf("\n\t============\n");
+		}
+		system("pause");
+	}
+	
+}
+
+// Para revisar cada parametro de un turno en caso de q no este apareciendo
+void fichaTecnica()
+{
+	Turnos lector;
+	
+	turnos=fopen("Turnos.dat","ab+");
+	if(turnos == NULL)
+	{
+		system("cls");
+		printf("\n\t======================================================================\n");
+		printf("\n\t[Error] - No se pudo abrir el archivo 'Turnos.dat'...\n");
+		printf("\n\t======================================================================\n");
+		system("pause");
+	}
+	system("cls");
+	fread(&lector,sizeof(Turnos),1,turnos);
+	while(!feof(turnos))
+	{
+		printf("\n\tNombre del profesional: ");
+		puts(lector.nombreProfesional);
+		printf("\n\tNombre del paciente: ");
+		puts(lector.ApeyNom);
+		printf("\n\tFecha: %02i/%02i/%i\n",lector.Fecha.dia,lector.Fecha.mes,lector.Fecha.anio);
+		printf("\n\tDNI del paciente: %i",lector.dni);
+		printf("\n\tObservacion del profesional: ");
+		puts(lector.detalle);
+		printf("\n\tAtendido: %i\n",lector.atendido);
+		printf("\n\tHoy status: %i\n",lector.hoy);
+		printf("\n\t=====\n");
+		fread(&lector,sizeof(Turnos),1,turnos);
+	}
+	fclose(turnos);
+	printf("\n\n");
+	system("pause");
+}
 
 
