@@ -2482,7 +2482,7 @@ void getRanking()
 {
 	Usuario archivos[100];
 	Usuario aux;
-	int i=0, n=0;
+	int i=0, n=0, pos;
 	Turnos infoTurnos[100];
 	int cmp;
 	
@@ -2548,40 +2548,38 @@ void getRanking()
 				}
 			}
 		}
+		
 		/*
-		for(int k=0; k<=i; k++)
-		{
-			for (int j=0; j<=i;j++)
+			char usuario[50];
+			char clave[50];
+			char ApeyNom[50];
+			Profesional profesional;
+			
+			struct Profesional
 			{
-				if(archivos[j].profesional.puntaje > archivos[j+1].profesional.puntaje)
-				{
-					strcpy(aux.usuario,archivos[j].usuario);
-					strcpy(aux.clave,archivos[j].clave);
-					strcpy(aux.ApeyNom,archivos[j].ApeyNom);
-					aux.profesional.id=archivos[j].profesional.id;
-					aux.profesional.dni=archivos[j].profesional.dni;
-					strcpy(aux.profesional.telefono,archivos[j].profesional.telefono);
-					aux.profesional.puntaje=archivos[j].profesional.puntaje;
-					
-					strcpy(archivos[j].usuario,archivos[j+1].usuario);
-					strcpy(archivos[j].clave,archivos[j+1].clave);
-					strcpy(archivos[j].ApeyNom,archivos[j+1].ApeyNom);
-					archivos[j].profesional.id=archivos[j+1].profesional.id;
-					archivos[j].profesional.dni=archivos[j+1].profesional.dni;
-					strcpy(archivos[j].profesional.telefono,archivos[j+1].profesional.telefono);
-					archivos[j].profesional.puntaje=archivos[j+1].profesional.puntaje;
-					
-					strcpy(archivos[j+1].usuario,aux.usuario);
-					strcpy(archivos[j+1].clave,aux.clave);
-					strcpy(archivos[j+1].ApeyNom,aux.ApeyNom);
-					archivos[j+1].profesional.id=aux.profesional.id;
-					archivos[j+1].profesional.dni=aux.profesional.dni;
-					strcpy(archivos[j+1].profesional.telefono,aux.profesional.telefono);
-					archivos[j+1].profesional.puntaje=aux.profesional.puntaje;			
-				}
-			}
-		} 
+				int id;
+				int dni;
+				char telefono[25];
+				int puntaje=0;
+			};
 		*/
+		
+		for(int k=0;k<i;k++)
+		{
+			pos = k;
+			strcpy(aux.ApeyNom,archivos[k].ApeyNom);
+			aux.profesional.puntaje=archivos[k].profesional.puntaje;
+			
+			while((pos>0) && (archivos[pos-1].profesional.puntaje < aux.profesional.puntaje))
+			{
+				archivos[pos].profesional.puntaje = archivos[pos-1].profesional.puntaje;
+				strcpy(archivos[pos].ApeyNom,archivos[pos-1].ApeyNom);
+				pos--;
+			}
+				archivos[pos].profesional.puntaje = aux.profesional.puntaje;
+				strcpy(archivos[pos].ApeyNom,aux.ApeyNom);	
+		}
+		
 		system("cls");
 		printf("\n\t======================================================================\n");
 		printf("\n\t\t   [Ranking de profesionales por atenciones]\n");
