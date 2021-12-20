@@ -8,16 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
-#include <iostream>
 #include <ctype.h>
 
 // Struct
 
-struct auxiliar
-{
-	char ApeyNom[60];
-	int posicion;
-};
 struct fecha
 {
 	int dia;
@@ -127,7 +121,7 @@ int main()
 	int Menu,ModEspacio,ModRecep,ModAdmin;
 	estado profesional;
 	estado recepcionista;
-	bool sesionProf,sesionRecep,bandFec=0;
+	bool bandFec=0;
 	fecha fActual;
 
 	getFecha(fActual);
@@ -181,9 +175,7 @@ int main()
 					break;
 				}
 		}
-	}while(Menu!=5);
-	
-	
+	}while(Menu!=5);	
 }
 
 // Funciones
@@ -562,11 +554,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 						cmp=strcmp(profes.usuario,"");
 						if(cmp==0)
 						{
-							system("cls");
-							printf("\n\t======================================================================\n");
-							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
-							printf("\n\t======================================================================\n\n\n");
-							system("pause");
+							eVacio();
 							error=1;
 						}
 						else
@@ -589,11 +577,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 						cmp=strcmp(profes.clave,"");
 						if(cmp==0)
 						{
-							system("cls");
-							printf("\n\t======================================================================\n");
-							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
-							printf("\n\t======================================================================\n\n\n");
-							system("pause");
+							eVacio();
 							error=1;
 						}
 					}while(error!=0);
@@ -671,11 +655,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 						cmp=strcmp(rec.usuario,"");
 						if(cmp==0)
 						{
-							system("cls");
-							printf("\n\t======================================================================\n");
-							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
-							printf("\n\t======================================================================\n\n\n");
-							system("pause");
+							eVacio();
 							error=1;
 						}
 					}while(error!=0);
@@ -694,11 +674,7 @@ void login(estado &profesional,estado &recepcionista,int mod)
 						cmp=strcmp(rec.clave,"");
 						if(cmp==0)
 						{
-							system("cls");
-							printf("\n\t======================================================================\n");
-							printf("\n\t[Error] - No se puede cargar un valor vacio.\n");
-							printf("\n\t======================================================================\n\n\n");
-							system("pause");
+							eVacio();
 							error=1;
 						}
 					}while(error!=0);
@@ -1091,7 +1067,7 @@ void getObservacion(estado profesional,fecha fActual)
 	
 	while(!feof(turnos))
 	{   
-		i++;	//Error esta mierda no aumenta por alguna razón
+		i++;
 		fread(&infoTurnos[i],sizeof(Turnos),1,turnos);
 	}
 	fclose(turnos);
@@ -1935,7 +1911,6 @@ void getUser(char user[50],bool profesional)
 	int cmp,longitud,contadorNum=0,contadorMay=0;
 	char aux;
 	bool error;
-	
 	do
 	{
 		do
@@ -1955,9 +1930,7 @@ void getUser(char user[50],bool profesional)
 			cmp=strcmp(user,"");
 			if(cmp==0)
 			{
-				system("cls");
-				printf("\n\t[Error] - No se permite un valor vacio\n\n");
-				system("pause");
+				eVacio();
 				error=1;
 			}	
 			else
@@ -1972,12 +1945,16 @@ void getUser(char user[50],bool profesional)
 			system("cls");
 			if(longitud<6)
 			{
+				printf("\n\t======================================================================\n");
 				printf("\n\t[Error] - El usuario debe tener como minimo 6 digitos.\n\n");
+				printf("\n\t======================================================================\n");
 	
 			}
 			else
 			{
+				printf("\n\t======================================================================\n");
 				printf("\n\t[Error] - El usuario debe tener como maximo 10 digitos.\n\n");
+				printf("\n\t======================================================================\n");
 			}
 			system("pause");
 			error=1;
@@ -1992,10 +1969,11 @@ void getUser(char user[50],bool profesional)
 					if(aux==user[j])
 					{
 						system("cls");
+						printf("\n\t======================================================================\n");
 						printf("\n\t[Error] - El nombre debe empezar con minuscula\n\n");
+						printf("\n\t======================================================================\n");
 						system("pause");
 						error=1;
-						//break;
 					}	
 				}
 				if(isdigit(user[j])!=0)
@@ -2005,11 +1983,12 @@ void getUser(char user[50],bool profesional)
 				if(contadorNum>3)
 				{
 					system("cls");
+					printf("\n\t======================================================================\n");
 					printf("\n\t[Error] - No se puede poner mas de 3 numeros.\n\n");
+					printf("\n\t======================================================================\n");
 					system("pause");
 					error=1;
 					contadorNum=0;
-					//break;
 				}
 				aux=toupper(user[j]);
 				if(aux==user[j])
@@ -2020,10 +1999,11 @@ void getUser(char user[50],bool profesional)
 			if(contadorMay<2)
 			{
 				system("cls");
+				printf("\n\t======================================================================\n");
 				printf("\n\t[Error] - El usuario debe tener almenos 2 mayusculas.\n\n");
+				printf("\n\t======================================================================\n");
 				system("cls");
 				error=1;
-				//break;
 			}
 		}
 	}while(error!=0);
@@ -2054,9 +2034,7 @@ void getPass(char password[50],bool profesional)
 			if(cmp==0)
 			{
 				error=1;
-				system("cls");
-				printf("\n\tLa contrsenia no puede estar vacia.\n\n");
-				system("pause");
+				eVacio();
 			}
 			else
 			{
@@ -2072,11 +2050,15 @@ void getPass(char password[50],bool profesional)
 			system("cls");
 			if(longitud<6)
 			{
+				printf("\n\t======================================================================\n");
 				printf("\n\t[Error]- La contrasenia debe tener almenos 6 digitos.\n\n");
+				printf("\n\t======================================================================\n");
 			}
 			else
 			{
+				printf("\n\t======================================================================\n");
 				printf("\n\t[Error] - La contrasenia debe tener como maximo 32 digitos.\n\n");
+				printf("\n\t======================================================================\n");
 			}
 			system("pause");
 		}
@@ -2087,14 +2069,16 @@ void getPass(char password[50],bool profesional)
 				if(ispunct(password[i])!=0)
 				{
 					system("cls");
+					printf("\n\t======================================================================\n");
 					printf("\n\t[Error] - No se permiten signos de puntuacion.\n\n");
+					printf("\n\t======================================================================\n");
 					system("pause");
 					error=1;
 					break;
 				}
 				else
 				{
-					if(isalpha(password[i])!=0 or isdigit!=0)
+					if(isalpha(password[i])!=0 or isdigit(password[i])!=0)
 					{
 						if(isalpha(password[i])!=0)
 						{
@@ -2112,7 +2096,9 @@ void getPass(char password[50],bool profesional)
 								if(contadorABC>2)
 								{
 									system("cls");
+									printf("\n\t======================================================================\n");
 									printf("\n\t[Error] - No se puede colocar 2 letras alfabeticamente consecutivas.\n\n");
+									printf("\n\t======================================================================\n");
 									system("pause");
 									error=1;
 									break;
@@ -2140,7 +2126,9 @@ void getPass(char password[50],bool profesional)
 							if(contadorNum>3)
 							{
 								system("cls");
+								printf("\n\t======================================================================\n");
 								printf("\n\t[Error] - La contrasenia no puede tener mas de 3 numeros seguidos\n\n");
+								printf("\n\t======================================================================\n");
 								system("pause");
 								error=1;
 								break;
@@ -2471,13 +2459,12 @@ void getAtencionesPorProf()
 			{
 				system("cls");
 				printf("\n\t======================================================================\n");
-				printf("\n\tEl profesional no recibio a ningun paciente ese dia.\n");
+				printf("\n\tEl profesional no recibio a ningun paciente.\n");
 				printf("\n\t======================================================================\n");
 			}
 			system("pause");
 		}
 }
-
 void getRanking()
 {
 	Usuario archivos[100];
@@ -2548,22 +2535,7 @@ void getRanking()
 				}
 			}
 		}
-		
-		/*
-			char usuario[50];
-			char clave[50];
-			char ApeyNom[50];
-			Profesional profesional;
 			
-			struct Profesional
-			{
-				int id;
-				int dni;
-				char telefono[25];
-				int puntaje=0;
-			};
-		*/
-		
 		for(int k=0;k<i;k++)
 		{
 			pos = k;
