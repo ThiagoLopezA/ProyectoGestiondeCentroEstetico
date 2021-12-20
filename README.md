@@ -1,6 +1,7 @@
 <h2>ProyectoGestiondeCentroEstetico</h2>
 <h3>
 Proyecto final de la materia de Algoritmo y estructura de datos de primer año de la carrera Ingenieria en Sistemas. Lenguaje utilizado para el mismo: c++.
+Grupo: Bool ¿Aprobamos?( trabajo ){ return true;}
 </h3>
 <h2>
 Alumnos encargados de este trabajo:
